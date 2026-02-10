@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clayton Cleanup Tracker</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f8f0;
+        }
+        
+        header {
+            background-color: #2d5016;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        header h1 {
+            margin-bottom: 5px;
+        }
+        
+        header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        #map {
+            height: 500px;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .info-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2d5016;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+        
+        .button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #2d5016;
+        }
+    </style>
+</head>
+<body>
+    <header>
+    <h1>Trash Party - Clayton</h1>
+    <p>Keeping our neighborhood clean, one block at a time</p>
+    <p style="margin-top: 10px; font-size: 13px;">
+        <a href="https://en.wikipedia.org/wiki/Clayton,_Denver" target="_blank" style="color: #a8d5a8; text-decoration: underline;">Learn more about Clayton, Denver</a>
+    </p>
+</header>
+    
+    <div class="container">
+        <div class="info-box">
+    <h2>Interactive Cleanup Map</h2>
+    <p>Click on the markers to see cleanup activities in different areas</p>
+    <div id="loadingMessage" class="loading">Loading cleanup data...</div>
+    
+    <div style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-left: 4px solid #4CAF50; border-radius: 4px;">
+        <p style="font-weight: bold; color: #2d5016; margin-bottom: 10px;">Want to get involved?</p>
+        <p style="margin: 5px 0;">1) Grab a neighbor or head out on your own</p>
+        <p style="margin: 5px 0;">2) Fill a trash bag or two with street litter</p>
+        <p style="margin: 5px 0;">3) Log your efforts on the Map</p>
+        <p style="margin: 5px 0;">4) Enjoy a slightly cleaner Clayton</p>
+    </div>
+</div>
+<div class="info-box">
+    <h2>Stay Connected </h2>
+    <p>Join this trashy mailing list to get infrequent updates on Trash Party events and neighborhood cleanup days!</p>
+    
+    <form id="emailForm" style="margin-top: 15px;">
+        <div class="form-group">
+            <label for="emailInput">Email Address:</label>
+            <input type="email" id="emailInput" required placeholder="your.email@example.com">
+        </div>
+        
+        <button type="submit" class="button" id="emailSubmitBtn">Sign Me Up!</button>
+    </form>
+    
+    <p id="emailMessage" style="margin-top: 15px; font-weight: bold;"></p>
+</div>
+        
+        <div class="info-box" style="text-align: center; background: linear-gradient(135deg, #4CAF50 0%, #2d5016 100%); color: white;">
+    <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 20px;">
+        <div>
+            <h2 style="margin: 0; font-size: 48px; color: white;" id="bagCounter">0</h2>
+            <p style="margin: 5px 0 0 0; font-size: 18px; opacity: 0.9;">Total Bags Collected</p>
+        </div>
+        <div>
+            <h2 style="margin: 0; font-size: 48px; color: white;" id="neighborCounter">0</h2>
+            <p style="margin: 5px 0 0 0; font-size: 18px; opacity: 0.9;">Engaged Neighbors</p>
+        </div>
+        <div>
+            <h2 style="margin: 0; font-size: 48px; color: white;" id="poundsCounter">0</h2>
+            <p style="margin: 5px 0 0 0; font-size: 18px; opacity: 0.9;">Pounds of Trash</p>
+        </div>
+    </div>
+</div>
+        
+        <div id="map"></div>
+        
+        <div class="info-box">
+            <h3>Legend</h3>
+            <p>🟢 Recently cleaned (within 7 days)</p>
+            <p>🟡 Cleaned (within 30 days)</p>
+            <p>🔴 Needs attention (30+ days)</p>
+        </div>
+        
+        <div class="info-box">
+    <h2>Log a Cleanup</h2>
+    <p>Click anywhere on the map to set the location, then fill out this form!</p>
+    
+    <form id="cleanupForm">
+        <div class="form-group">
+            <label for="blockName">Area Cleaned:</label>
+            <input type="text" id="blockName" required placeholder="e.g., 35th Ave from St. Paul to Clayton">
+        </div>
+        
+        <div class="form-group">
+            <label for="volunteer">Neighbor Name:</label>
+            <input type="text" id="volunteer" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="bags">Bags Collected:</label>
+            <input type="number" id="bags" min="0" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="lat">Latitude:</label>
+            <input type="number" id="lat" step="0.0001" required placeholder="Click map to auto-fill" readonly>
+        </div>
+        
+        <div class="form-group">
+            <label for="lng">Longitude:</label>
+            <input type="number" id="lng" step="0.0001" required placeholder="Click map to auto-fill" readonly>
+        </div>
+        
+        <button type="submit" class="button" id="submitBtn">Submit Cleanup</button>
+    </form>
+    
+    <p id="formMessage" style="margin-top: 15px; color: green; font-weight: bold;"></p>
+<div class="info-box" style="border-top: 3px solid #4CAF50;">
+    <h3>Questions or Feedback?</h3>
+    <p>Contact us at: <a href="mailto:hello@claytontrashparty.com" style="color: #2d5016; font-weight: bold;">hello@claytontrashparty.com</a></p>
+    
+    <p style="margin-top: 15px; font-size: 12px; color: #666;">
+        <strong>Privacy Note:</strong> We collect only the information you provide (name, location, email) to track neighborhood cleanup efforts and send occasional updates. Your data is stored securely and never shared with third parties.
+    </p>
+</div>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Firebase and Main App Script -->
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+        
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBJEBbDfgShAp-vzCVm2ysivy1MX5MFZhQ",
+            authDomain: "clayton-cleanup.firebaseapp.com",
+            projectId: "clayton-cleanup",
+            storageBucket: "clayton-cleanup.firebasestorage.app",
+            messagingSenderId: "753353969491",
+            appId: "1:753353969491:web:d8f2a5e55cc91915e5dba6"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Make Leaflet available
+        const L = window.L;
+        
+        // Initialize the map
+        const map = L.map('map').setView([39.766233, -104.954529], 15);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+        
+        // Initial corner markers (always show these)
+const cornerMarkers = [
+    {
+        lat: 39.761833,
+        lng: -104.959778,
+        blockName: "MLK Blvd & York St",
+        lastCleaned: "2023-11-15",
+        neighbor: "Pending",
+        bags: 0
+    },
+    {
+        lat: 39.761833,
+        lng: -104.940472,
+        blockName: "MLK Blvd & Colorado Blvd",
+        lastCleaned: "2023-12-10",
+        neighbor: "Pending",
+        bags: 0
+    },
+    {
+        lat: 39.773444,
+        lng: -104.940611,
+        blockName: "40th Ave & Colorado Blvd",
+        lastCleaned: "2024-01-15",
+        neighbor: "Pending",
+        bags: 0
+    },
+    {
+        lat: 39.773167,
+        lng: -104.959361,
+        blockName: "40th Ave & York St",
+        lastCleaned: "2024-02-07",
+        neighbor: "Pending",
+        bags: 0
+    }
+];
+        
+        // Function to determine marker color
+        function getMarkerColor(dateString) {
+            const cleanedDate = new Date(dateString);
+            const today = new Date();
+            const daysSince = (today - cleanedDate) / (1000 * 60 * 60 * 24);
+            
+            if (daysSince <= 7) return 'green';
+            if (daysSince <= 30) return 'orange';
+            return 'red';
+        }
+        
+        // Function to add a marker to the map
+        function addMarkerToMap(cleanup) {
+            const color = getMarkerColor(cleanup.lastCleaned);
+            
+            const icon = L.divIcon({
+                className: 'custom-marker',
+                html: `<div style="background-color: ${color}; width: 25px; height: 25px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+                iconSize: [25, 25]
+            });
+            
+            const marker = L.marker([cleanup.lat, cleanup.lng], { icon: icon }).addTo(map);
+            
+           marker.bindPopup(`<strong>${cleanup.blockName}</strong><br>Last cleaned: ${cleanup.lastCleaned}<br>Neighbor: ${cleanup.volunteer}<br>Bags collected: ${cleanup.bags}`);
+        }
+        
+        // Load all cleanups from Firebase
+async function loadCleanups() {
+    try {
+        // Add corner markers first
+        cornerMarkers.forEach(cleanup => {
+            addMarkerToMap(cleanup);
+        });
+        
+        // Load user-submitted cleanups from Firebase
+        const q = query(collection(db, "cleanups"), orderBy("lastCleaned", "desc"));
+        const querySnapshot = await getDocs(q);
+        
+        querySnapshot.forEach((doc) => {
+            const cleanup = doc.data();
+            addMarkerToMap(cleanup);
+        });
+        
+        // Calculate total bags and unique neighbors
+        let totalBags = 0;
+        const uniqueNeighbors = new Set();
+        
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            totalBags += data.bags || 0;
+            // Update counters
+document.getElementById('bagCounter').textContent = totalBags;
+document.getElementById('neighborCounter').textContent = uniqueNeighbors.size;
+document.getElementById('poundsCounter').textContent = totalBags * 5;
+            // Add volunteer name to set (case-insensitive, trimmed)
+            if (data.volunteer) {
+                uniqueNeighbors.add(data.volunteer.trim().toLowerCase());
+            }
+        });
+        
+        // Update counters
+        document.getElementById('bagCounter').textContent = totalBags;
+        document.getElementById('neighborCounter').textContent = uniqueNeighbors.size;
+        document.getElementById('neighborCounter').textContent = uniqueNeighbors.size;
+
+// Update pounds counter
+const currentPounds = parseInt(document.getElementById('poundsCounter').textContent);
+document.getElementById('poundsCounter').textContent = currentPounds + (newCleanup.bags * 5);
+        // Hide loading message
+        document.getElementById('loadingMessage').textContent = 
+            `✅ Loaded ${querySnapshot.size} cleanup(s) from the database`;
+        
+        setTimeout(() => {
+            document.getElementById('loadingMessage').style.display = 'none';
+        }, 3000);
+        
+    } catch (error) {
+        console.error("Error loading cleanups:", error);
+        document.getElementById('loadingMessage').textContent = 
+            '⚠️ Error loading data. Your new cleanups will still save!';
+    }
+}
+        
+        // Load cleanups when page loads
+        loadCleanups();
+        
+        // Click map to set coordinates
+        let tempMarker = null;
+        
+        map.on('click', function(e) {
+            if (tempMarker) {
+                map.removeLayer(tempMarker);
+            }
+            
+            tempMarker = L.marker([e.latlng.lat, e.latlng.lng], {
+                icon: L.divIcon({
+                    className: 'temp-marker',
+                    html: `<div style="background-color: blue; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+                    iconSize: [30, 30]
+                })
+            }).addTo(map);
+            
+            document.getElementById('lat').value = e.latlng.lat.toFixed(6);
+            document.getElementById('lng').value = e.latlng.lng.toFixed(6);
+            
+            document.getElementById('cleanupForm').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Handle form submission
+        document.getElementById('cleanupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+            
+            // Get form values
+            const newCleanup = {
+                blockName: document.getElementById('blockName').value,
+                volunteer: document.getElementById('volunteer').value,
+                bags: parseInt(document.getElementById('bags').value),
+                lat: parseFloat(document.getElementById('lat').value),
+                lng: parseFloat(document.getElementById('lng').value),
+                lastCleaned: new Date().toISOString().split('T')[0]
+            };
+            
+            try {
+                // Save to Firebase
+                await addDoc(collection(db, "cleanups"), newCleanup);
+                
+                // Remove temporary marker
+                if (tempMarker) {
+                    map.removeLayer(tempMarker);
+                    tempMarker = null;
+                }
+                
+                // Add the real marker to the map
+addMarkerToMap(newCleanup);
+
+// Update bag counter
+const currentBagCount = parseInt(document.getElementById('bagCounter').textContent);
+document.getElementById('bagCounter').textContent = currentBagCount + newCleanup.bags;
+
+// Update neighbor counter (reload to get accurate unique count)
+const q = query(collection(db, "cleanups"));
+const snapshot = await getDocs(q);
+const uniqueNeighbors = new Set();
+snapshot.forEach((doc) => {
+    const data = doc.data();
+    if (data.volunteer) {
+        uniqueNeighbors.add(data.volunteer.trim().toLowerCase());
+    }
+});
+document.getElementById('neighborCounter').textContent = uniqueNeighbors.size;
+
+// Show success message
+document.getElementById('formMessage').textContent = 
+    '✅ Cleanup saved to database! ' + newCleanup.bags + ' bag(s) at ' + newCleanup.blockName;
+                
+                // Clear the form
+                this.reset();
+                
+                // Clear success message after 5 seconds
+                setTimeout(() => {
+                    document.getElementById('formMessage').textContent = '';
+                }, 5000);
+                
+            } catch (error) {
+                console.error("Error saving cleanup:", error);
+                document.getElementById('formMessage').textContent = 
+                    '❌ Error saving. Please try again.';
+                document.getElementById('formMessage').style.color = 'red';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Cleanup';
+            }
+        });
+    // Handle email form submission
+document.getElementById('emailForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    console.log('Form submitted!');
+    
+    const submitBtn = document.getElementById('emailSubmitBtn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Saving...';
+    
+    const email = document.getElementById('emailInput').value;
+    console.log('Email value:', email);
+    
+    try {
+        console.log('Attempting to save to Firebase...');
+        
+        // Save email to Firebase
+        const docRef = await addDoc(collection(db, "emailSignups"), {
+            email: email,
+            signupDate: new Date().toISOString()
+        });
+        
+        console.log('Document written with ID:', docRef.id);
+        
+        // Show success message
+        document.getElementById('emailMessage').textContent = '✅ Thanks for signing up! We\'ll keep you posted.';
+        document.getElementById('emailMessage').style.color = 'green';
+        
+        // Clear the form
+        this.reset();
+        
+        // Clear message after 5 seconds
+        setTimeout(() => {
+            document.getElementById('emailMessage').textContent = '';
+        }, 5000);
+        
+    } catch (error) {
+        console.error("Full error object:", error);
+        console.error("Error code:", error.code);
+        console.error("Error message:", error.message);
+        
+        document.getElementById('emailMessage').textContent = '❌ Error: ' + error.message;
+        document.getElementById('emailMessage').style.color = 'red';
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign Me Up!';
+    }
+});
+    </script>
+
+</body>
+</html>
