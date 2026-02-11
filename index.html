@@ -219,11 +219,11 @@
         </div>
         
         <div class="info-box">
-            <h3>Legend</h3>
-            <p>🟢 Recently cleaned (within 7 days)</p>
-            <p>🟡 Cleaned (within 30 days)</p>
-            <p>🔴 Needs attention (30+ days)</p>
-        </div>
+    <h3>Legend</h3>
+    <p>🟢 Just cleaned (within 3 days)</p>
+    <p>🟡 Within the past two weeks (within 14 days)</p>
+    <p>🔴 It's been a minute (14+ days)</p>
+</div>
         
         <div class="info-box">
             <h2>Log a Cleanup</h2>
@@ -351,15 +351,15 @@
         ];
         
         // Function to determine marker color
-        function getMarkerColor(dateString) {
-            const cleanedDate = new Date(dateString);
-            const today = new Date();
-            const daysSince = (today - cleanedDate) / (1000 * 60 * 60 * 24);
-            
-            if (daysSince <= 7) return 'green';
-            if (daysSince <= 30) return 'orange';
-            return 'red';
-        }
+function getMarkerColor(dateString) {
+    const cleanedDate = new Date(dateString);
+    const today = new Date();
+    const daysSince = (today - cleanedDate) / (1000 * 60 * 60 * 24);
+    
+    if (daysSince <= 3) return 'green';
+    if (daysSince <= 14) return 'orange';
+    return 'red';
+}
         
         // Function to add a marker to the map
         function addMarkerToMap(cleanup) {
