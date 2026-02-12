@@ -774,7 +774,38 @@ L.rectangle(bounds, {
                 lng: parseFloat(document.getElementById('lng').value),
                 lastCleaned: new Date().toISOString().split('T')[0]
             };
-            
+            // Validate the submission
+if (newCleanup.bags > 50) {
+    messageEl.textContent = '⚠️ 50+ bags is amazing! Please contact us at hello-trash@trashparty.org to verify this cleanup.';
+    messageEl.className = 'message error';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Cleanup';
+    return;
+}
+
+if (newCleanup.bags < 1) {
+    messageEl.textContent = '⚠️ Please enter at least 1 bag collected.';
+    messageEl.className = 'message error';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Cleanup';
+    return;
+}
+
+if (newCleanup.volunteer.trim().length < 2) {
+    messageEl.textContent = '⚠️ Please enter a valid name (at least 2 characters).';
+    messageEl.className = 'message error';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Cleanup';
+    return;
+}
+
+if (newCleanup.blockName.trim().length < 3) {
+    messageEl.textContent = '⚠️ Please describe the area you cleaned (at least 3 characters).';
+    messageEl.className = 'message error';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Cleanup';
+    return;
+}
             try {
                 // Save to Firebase
                 await addDoc(collection(db, "cleanups"), newCleanup);
