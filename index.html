@@ -641,42 +641,19 @@ header a:hover {
             attribution: '© OpenStreetMap contributors',
             maxZoom: 19
         }).addTo(map);
-        
-        // Initial corner markers
-        const cornerMarkers = [
-            {
-                lat: 39.761833,
-                lng: -104.959778,
-                blockName: "MLK Blvd & York St",
-                lastCleaned: "2023-11-15",
-                neighbor: "Pending",
-                bags: 0
-            },
-            {
-                lat: 39.761833,
-                lng: -104.940472,
-                blockName: "MLK Blvd & Colorado Blvd",
-                lastCleaned: "2023-12-10",
-                neighbor: "Pending",
-                bags: 0
-            },
-            {
-                lat: 39.773444,
-                lng: -104.940611,
-                blockName: "40th Ave & Colorado Blvd",
-                lastCleaned: "2024-01-15",
-                neighbor: "Pending",
-                bags: 0
-            },
-            {
-                lat: 39.773167,
-                lng: -104.959361,
-                blockName: "40th Ave & York St",
-                lastCleaned: "2024-02-07",
-                neighbor: "Pending",
-                bags: 0
-            }
-        ];
+        // Add neighborhood boundary rectangle
+const bounds = [
+    [39.761833, -104.959778],  // Southwest corner (MLK & York)
+    [39.773444, -104.940472]   // Northeast corner (40th & Colorado)
+];
+
+L.rectangle(bounds, {
+    color: '#2d5016',
+    weight: 5,
+    fillColor: '#4CAF50',
+    fillOpacity: 0.1,
+    dashArray: '10, 5'
+}).addTo(map);
         
         // Function to determine marker color
         function getMarkerColor(dateString) {
@@ -708,10 +685,7 @@ header a:hover {
         // Load all cleanups from Firebase
         async function loadCleanups() {
             try {
-                // Add corner markers first
-                cornerMarkers.forEach(cleanup => {
-                    addMarkerToMap(cleanup);
-                });
+                
                 
                 // Load user-submitted cleanups from Firebase
                 const q = query(collection(db, "cleanups"), orderBy("lastCleaned", "desc"));
