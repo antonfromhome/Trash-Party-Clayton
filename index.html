@@ -573,7 +573,7 @@ header a:hover {
                     </div>
                 </div>
                 
-                <button type="submit" class="button" id="submitBtn">Submit Cleanup</button>
+                <button type="submit" class="button" id="submitBtn">Log Cleanup</button>
                 
                 <div id="formMessage"></div>
             </form>
@@ -763,7 +763,7 @@ L.rectangle(bounds, {
             const submitBtn = document.getElementById('submitBtn');
             const messageEl = document.getElementById('formMessage');
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Saving...';
+            submitBtn.textContent = 'Thanks Neighbor!';
             
             // Get form values
             const newCleanup = {
@@ -779,7 +779,7 @@ if (newCleanup.bags > 50) {
     messageEl.textContent = '⚠️ 50+ bags is amazing! Please contact us at hello-trash@trashparty.org to verify this cleanup.';
     messageEl.className = 'message error';
     submitBtn.disabled = false;
-    submitBtn.textContent = 'Submit Cleanup';
+    submitBtn.textContent = 'Log Cleanup';
     return;
 }
 
@@ -787,7 +787,7 @@ if (newCleanup.bags < 1) {
     messageEl.textContent = '⚠️ Please enter at least 1 bag collected.';
     messageEl.className = 'message error';
     submitBtn.disabled = false;
-    submitBtn.textContent = 'Submit Cleanup';
+    submitBtn.textContent = 'Log Cleanup';
     return;
 }
 
@@ -795,7 +795,7 @@ if (newCleanup.volunteer.trim().length < 2) {
     messageEl.textContent = '⚠️ Please enter a valid name (at least 2 characters).';
     messageEl.className = 'message error';
     submitBtn.disabled = false;
-    submitBtn.textContent = 'Submit Cleanup';
+    submitBtn.textContent = 'Log Cleanup';
     return;
 }
 
@@ -803,7 +803,7 @@ if (newCleanup.blockName.trim().length < 3) {
     messageEl.textContent = '⚠️ Please describe the area you cleaned (at least 3 characters).';
     messageEl.className = 'message error';
     submitBtn.disabled = false;
-    submitBtn.textContent = 'Submit Cleanup';
+    submitBtn.textContent = 'Log Cleanup';
     return;
 }
             try {
@@ -841,7 +841,7 @@ if (newCleanup.blockName.trim().length < 3) {
 updateProgressBar(currentPounds + (newCleanup.bags * 5));
 
                 // Show success message
-                messageEl.textContent = `✅ Cleanup saved! ${newCleanup.bags} bag(s) at ${newCleanup.blockName}`;
+                messageEl.textContent = `Cleanup saved! ${newCleanup.bags} bag(s) at ${newCleanup.blockName}`;
                 messageEl.className = 'message success';
                 
                 // Clear the form
@@ -859,7 +859,7 @@ updateProgressBar(currentPounds + (newCleanup.bags * 5));
                 messageEl.className = 'message error';
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Cleanup';
+                submitBtn.textContent = 'Log Cleanup';
             }
         });
         
@@ -882,7 +882,7 @@ updateProgressBar(currentPounds + (newCleanup.bags * 5));
                 });
                 
                 // Show success message
-                messageEl.textContent = '✅ Thanks for signing up! We\'ll keep you posted.';
+                messageEl.textContent = 'Thanks, we\'ll keep you posted!';
                 messageEl.className = 'message success';
                 
                 // Clear the form
@@ -900,7 +900,7 @@ updateProgressBar(currentPounds + (newCleanup.bags * 5));
                 messageEl.className = 'message error';
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Sign Me Up!';
+                submitBtn.textContent = 'Sign Up';
             }
         });
         // Update progress bar
