@@ -428,12 +428,9 @@ header a:hover {
 </head>
 <body>
     <header>
-       <h1>Trash Party</h1>
-<p>Clayton - Less Litter, More Community</p>
-            </div>
-        </div>
-        <a href="https://en.wikipedia.org/wiki/Clayton,_Denver" target="_blank">Learn more about Clayton, Denver →</a>
-    </header>
+    <h1>Trash Party</h1>
+    <p>Less litter, more community</p>
+</header>
     
     <div class="container">
         <!-- Stats Counter -->
@@ -455,10 +452,7 @@ header a:hover {
         <!-- Map Section -->
         <div class="map-section">
             <div class="section-header">
-                <h2 style="display: flex; align-items: center; gap: 15px; justify-content: center;">
-    <img src="trash-party-logo.png" alt="Trash Party Logo" style="height: 80px; width: auto;">
-    Neighborhood Cleanup Map
-</h2>
+               <h2>Clayton Neighborhood Cleanup Map</h2>
                 <p>See where neighbors are making a difference</p>
                 <div id="loadingMessage" class="loading">Loading cleanup data...</div>
             </div>
@@ -478,6 +472,18 @@ header a:hover {
         <div class="legend-dot" style="background-color: red;"></div>
         <span>Cleaned more than two weeks ago</span>
     </div>
+     </div>
+            
+            <!-- Expand to Your Neighborhood -->
+            <div style="text-align: center; margin-top: 30px; padding: 20px; background: #f0f8f0; border-radius: 12px; border: 2px solid #4CAF50;">
+                <p style="color: #2d5016; font-size: 1.1em; margin-bottom: 8px;">
+                    <strong>Want to add your neighborhood to the Trash Party?</strong>
+                </p>
+                <p style="color: #555; font-size: 0.95em;">
+                    Email <a href="mailto:hello-trash@trashparty.org" style="color: #2d5016; font-weight: 600; text-decoration: none;">hello-trash@trashparty.org</a> to get the ball rolling.
+                </p>
+            </div>
+        </div>
 </div>
               </div>
             
@@ -498,29 +504,34 @@ header a:hover {
         
         </div>
         
-        <!-- Get Involved CTA -->
+<!-- Get Involved CTA -->
 <div class="cta-section">
     <h2>Want to get involved?</h2>
+    <p style="font-size: 1.2em; color: #2d5016; margin-bottom: 30px; font-weight: 500;">Start in under 2 minutes</p>
+    
     <div class="steps">
         <div class="step">
             <div class="step-number">1</div>
-            <p>Head outside, solo or with a neighbor</p>
+            <p>Grab a bag. Step outside. No planning needed — just start where you are.</p>
         </div>
         <div class="step">
             <div class="step-number">2</div>
-            <p>Collect as much litter as you want. Chat with neighbors, pet dogs, or just enjoy being outside</p>
+            <p>Walk your block. Pick things up. Take your time. Move your body. Say hi. Make it social if you want.</p>
         </div>
         <div class="step">
             <div class="step-number">3</div>
-            <p>Log your impact on the map</p>
+            <p>Drop a pin. Log what you did. Mark your cleanup on the map in seconds.</p>
         </div>
         <div class="step">
             <div class="step-number">4</div>
-            <p>Enjoy your clean community</p>
+            <p>See your impact build. Watch your street, and your neighborhood, change for the better over time.</p>
+        </div>
+        <div class="step">
+            <div class="step-number">5</div>
+            <p>Do it again (it gets easier). Fifteen minutes here and there adds up quickly.</p>
         </div>
     </div>
-</div>
-        
+</div>        
         <!-- Email Signup -->
 <div class="form-section">
     <h2>Connect</h2>
@@ -581,24 +592,23 @@ header a:hover {
         <!-- About Section -->
        <div class="about-section">
     <h2>What is Trash Party?</h2>
-    <p>Tired of seeing litter on your street? Us too.</p>
+    <p>Tired of seeing litter on your street? Same.</p>
     
-    <p>Trash Party is a grassroots effort to keep Clayton clean while bringing neighbors together.</p>
+    <p>Trash Party is a simple, grassroots way to take pride in where you live — no waiting, no red tape, just neighbors showing up.</p>
     
-    <p>Whether you have 15 minutes or an hour, every cleanup counts. Grab a friend, head outside, say hi to your neighbors, and make it a party.</p>
+    <p>Step outside, invite a friend, and turn a quick cleanup into something social. Whether you have 15 minutes or an hour, you'll get some fresh air, move your body, meet people, and leave your block better than you found it.</p>
     
-    <p>Log your impact on the map to inspire others and document progress toward our goal of getting a ton of litter off the street.</p>
-    
-    <p>We believe one simple thing: all trash belongs in a trash can.</p>
-    
-    <p>No formal membership, no meetings, no hassle—just neighbors taking pride in our community.</p>
-</div>
-        
+    <p>A better neighborhood isn't something you wait for — it's something you create.</p>
+</div> 
         <!-- Footer -->
         <footer>
-            <h3>Feedback?</h3>
-            <p>Contact us at: <a href="mailto:hello-trash@trashparty.org">hello-trash@trashparty.org</a></p>
-            
+    <div style="text-align: center; margin-bottom: 30px;">
+        <img src="trash-party-logo.png" alt="Trash Party Logo" style="height: 100px; width: auto;">
+    </div>
+    
+    <h3>Feedback?</h3>
+    <p>Contact us at: <a href="mailto:hello-trash@trashparty.org">hello-trash@trashparty.org</a></p>
+    
             <p style="margin-top: 20px;"><strong>Privacy Note:</strong> We collect only the information you provide (name, location, email) to track neighborhood cleanup efforts and send occasional updates. Your data is stored securely and never shared with third parties.</p>
             
             <div class="disclaimer">
@@ -771,17 +781,18 @@ map.on('click', function(e) {
         clickLng >= -104.959778 && clickLng <= -104.940472
     );
     
-    if (!inBounds) {
-    // Show error message
-    const messageEl = document.getElementById('formMessage');
-    messageEl.innerHTML = '⚠️ This location is outside Clayton.<br><strong>Want to start a Trash Party in your neighborhood?</strong><br>Email <a href="mailto:hello-trash@trashparty.org" style="color: #2d5016; font-weight: bold;">hello-trash@trashparty.org</a> to get the ball rolling.';
-    messageEl.className = 'message error';
-    
-    // Clear message after 5 seconds
-    setTimeout(() => {
-        messageEl.textContent = '';
-        messageEl.className = '';
-    }, 5000);
+   if (!inBounds) {
+    // Create a popup at the click location
+    L.popup()
+        .setLatLng(e.latlng)
+        .setContent(`
+            <div style="text-align: center; padding: 10px;">
+                <strong style="color: #c62828;">Outside Clayton Boundary</strong><br>
+                <p style="margin: 10px 0; font-size: 0.9em;">Want to start Trash Party in your neighborhood?</p>
+                <a href="mailto:hello-trash@trashparty.org" style="color: #2d5016; font-weight: 600;">Email us to get started →</a>
+            </div>
+        `)
+        .openOn(map);
     
     return; // Don't place marker
 }
