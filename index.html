@@ -772,19 +772,19 @@ map.on('click', function(e) {
     );
     
     if (!inBounds) {
-        // Show error message
-        const messageEl = document.getElementById('formMessage');
-        messageEl.textContent = '⚠️ Please click inside the Clayton boundary (green rectangle)';
-        messageEl.className = 'message error';
-        
-        // Clear message after 3 seconds
-        setTimeout(() => {
-            messageEl.textContent = '';
-            messageEl.className = '';
-        }, 3000);
-        
-        return; // Don't place marker
-    }
+    // Show error message
+    const messageEl = document.getElementById('formMessage');
+    messageEl.innerHTML = '⚠️ This location is outside Clayton.<br><strong>Want to start a Trash Party in your neighborhood?</strong><br>Email <a href="mailto:hello-trash@trashparty.org" style="color: #2d5016; font-weight: bold;">hello-trash@trashparty.org</a> to get the ball rolling.';
+    messageEl.className = 'message error';
+    
+    // Clear message after 5 seconds
+    setTimeout(() => {
+        messageEl.textContent = '';
+        messageEl.className = '';
+    }, 5000);
+    
+    return; // Don't place marker
+}
     
     // Rest of existing click handler code...
     if (tempMarker) {
