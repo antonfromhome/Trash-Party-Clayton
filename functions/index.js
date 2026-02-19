@@ -5,7 +5,7 @@ const sgMail = require('@sendgrid/mail');
 admin.initializeApp();
 
 // Set your SendGrid API key
-sgMail.setApiKey('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');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // This function triggers when a new email signup is added to Firestore
 exports.sendWelcomeEmail = onDocumentCreated('emailSignups/{signupId}', async (event) => {
