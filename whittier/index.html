@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trash Party - Whittier</title>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ESJJP6CSH6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-ESJJP6CSH6');
+</script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #fafafa;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+        
+        header {
+    background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%);
+    color: #2d5016;
+    padding: 60px 20px;
+    text-align: center;
+    border-bottom: 3px solid #4CAF50;
+}
+
+header h1 {
+    font-size: 4em;
+    font-weight: 900;
+    margin-bottom: 8px;
+    letter-spacing: -2px;
+    color: #2d5016;
+}
+
+header p {
+    font-size: 1.3em;
+    font-weight: 400;
+    color: #555;
+}
+
+header a {
+    color: #2d5016;
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: color 0.3s ease;
+}
+
+header a:hover {
+    color: #4CAF50;
+}
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Stats Counter */
+        .stats {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            margin: -60px auto 60px;
+            max-width: 1000px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            text-align: center;
+        }
+        
+        .stat-item h2 {
+            font-size: 4em;
+            font-weight: 800;
+            color: #2d5016;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+        
+        .stat-item p {
+            font-size: 0.95em;
+            color: #666;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Section Headers */
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .section-header h2 {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+        
+        .section-header p {
+            font-size: 1.1em;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Map Section */
+        .map-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 60px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+        
+        #map {
+            height: 600px;
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: #f8f8f8;
+            border-radius: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95em;
+            color: #555;
+        }
+        
+        .legend-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%);
+            border-radius: 20px;
+            padding: 60px 40px;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #2d5016;
+            margin-bottom: 30px;
+        }
+        
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .step {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .step-number {
+    width: 40px;
+    height: 40px;
+    background: #2d5016;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2em;
+    margin: 0 auto 15px;
+}
+        
+        .step p {
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* Form Sections */
+        .form-section {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+        
+        .form-section h2 {
+            font-size: 2em;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+        
+        .form-section > p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.05em;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 0;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e8e8e8;
+            border-radius: 12px;
+            font-size: 1em;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);
+        }
+        
+        .form-group input:read-only {
+            background: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+      .button {
+    background: #2d5016;
+    color: white;
+    padding: 16px 40px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.05em;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.button:hover {
+    background: #3d6b1f;
+    transform: translateY(-1px);
+}
+
+.button:disabled {
+    background: #d0d0d0;
+    color: #888;
+    cursor: not-allowed;
+    transform: none;
+}
+        
+        .message {
+            margin-top: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .message.success {
+            background: #e8f5e9;
+            color: #2d5016;
+        }
+        
+        .message.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        /* About Section */
+        .about-section {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+        
+        .about-section h2 {
+            font-size: 2em;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+        
+        .about-section p {
+            color: #555;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .about-section p:last-of-type {
+            font-style: italic;
+            color: #2d5016;
+            font-weight: 500;
+        }
+        
+        /* Footer */
+        footer {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+        
+        footer h3 {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+        }
+        
+        footer p {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+        
+        footer a {
+            color: #2d5016;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .disclaimer {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+            font-size: 0.85em;
+            color: #888;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #2d5016;
+            font-size: 1.05em;
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+            
+            .stats {
+                margin: -40px 20px 40px;
+                padding: 30px 20px;
+                gap: 30px;
+            }
+            
+            .stat-item h2 {
+                font-size: 3em;
+            }
+            
+            .section-header h2 {
+                font-size: 1.8em;
+            }
+            
+            #map {
+                height: 400px;
+            }
+            
+            .form-section,
+            .about-section,
+            footer {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+    <h1>Trash Party</h1>
+    <p>Whittier - Less litter, more community.</p>
+</header>
+    
+    <div class="container">
+        <!-- Stats Counter -->
+        <div class="stats">
+            <div class="stat-item">
+                <h2 id="bagCounter">0</h2>
+                <p>Bags Collected</p>
+            </div>
+           <div class="stat-item">
+    <h2 id="neighborCounter">0</h2>
+    <p>Neighbors Helping</p>
+</div>
+            <div class="stat-item">
+    <h2 id="poundsCounter">0</h2>
+    <p>Pounds of Litter Picked Up</p>
+</div>
+        </div>
+     
+        <!-- Map Section -->
+        <div class="map-section">
+            <div class="section-header">
+               <h2>Whittier Neighborhood Cleanup Map</h2>
+                <p>Less litter, more community</p>
+                <div id="loadingMessage" class="loading">Loading cleanup data...</div>
+            </div>
+            
+            <div id="map"></div>
+            
+            <div class="legend">
+    <div class="legend-item">
+        <div class="legend-dot" style="background-color: green;"></div>
+        <span>Freshly cleaned within 3 days</span>
+    </div>
+    <div class="legend-item">
+        <div class="legend-dot" style="background-color: orange;"></div>
+        <span>Cleaned within two weeks</span>
+    </div>
+    <div class="legend-item">
+        <div class="legend-dot" style="background-color: red;"></div>
+        <span>Cleaned more than two weeks ago</span>
+    </div>
+     </div>
+            
+            <!-- Expand to Your Neighborhood -->
+            <div style="text-align: center; margin-top: 30px; padding: 20px; background: #f0f8f0; border-radius: 12px; border: 2px solid #4CAF50;">
+                <p style="color: #2d5016; font-size: 1.1em; margin-bottom: 8px;">
+                    <strong>Want to add your neighborhood to the Trash Party?</strong>
+                </p>
+                <p style="color: #555; font-size: 0.95em;">
+                    Email <a href="mailto:hello-trash@trashparty.org" style="color: #2d5016; font-weight: 600; text-decoration: none;">hello-trash@trashparty.org</a> to get the ball rolling.
+                </p>
+            </div>
+        </div>
+</div>
+              </div>
+            
+            <!-- Goal Progress Bar -->
+            <div style="margin-top: 30px; padding-top: 30px; border-top: 2px solid #f0f0f0;">
+               <h3 style="text-align: center; font-size: 1.5em; font-weight: 700; color: #2d5016; margin-bottom: 20px;">Goal: Get a ton of litter off our streets</h3>
+                
+                <div style="background: #e8e8e8; border-radius: 50px; height: 40px; overflow: hidden; position: relative;">
+                    <div id="progressBar" style="background: #2d5016; height: 100%; width: 0%; transition: width 0.5s ease; border-radius: 50px; display: flex; align-items: center; justify-content: flex-end; padding-right: 15px;">
+                        <span id="progressText" style="color: white; font-weight: 700; font-size: 1.1em;"></span>
+                    </div>
+                </div>
+                
+                <p style="text-align: center; margin-top: 15px; color: #666; font-size: 1.1em;">
+                    <span id="progressLbs">0</span> / 2,000 lbs
+                </p>
+            </div>
+        
+        </div>
+        
+<!-- Get Involved CTA -->
+<div class="cta-section">
+    <h2>Want to get involved?</h2>
+    <p style="font-size: 1.2em; color: #2d5016; margin-bottom: 30px; font-weight: 500;">Start in under 2 minutes</p>
+    
+    <div class="steps">
+        <div class="step">
+            <div class="step-number">1</div>
+            <p>Grab a bag. Step outside. No planning needed — just start where you are.</p>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <p>Walk your block. Pick things up. Take your time. Move your body. Say hi. Make it social if you want.</p>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <p>Drop a pin. Log what you did. Mark your cleanup on the map in seconds.</p>
+        </div>
+        <div class="step">
+            <div class="step-number">4</div>
+            <p>See your impact build. Watch your street, and your neighborhood, change for the better over time.</p>
+        </div>
+        <div class="step">
+            <div class="step-number">5</div>
+            <p>Do it again (it gets easier). Fifteen minutes here and there adds up quickly.</p>
+        </div>
+    </div>
+</div>        
+        <!-- Email Signup -->
+<div class="form-section">
+    <h2>Connect</h2>
+    <p>A trashy mailing list for infrequent Trash Party updates</p>
+    
+    <form id="emailForm">
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label for="emailInput">Email Address</label>
+            <input type="email" id="emailInput" required placeholder="your.email@example.com">
+        </div>
+        
+        <button type="submit" class="button" id="emailSubmitBtn">Sign Up</button>
+        
+        <div id="emailMessage"></div>
+    </form>
+</div>
+        <!-- Log Cleanup Form -->
+        <div class="form-section">
+            <h2>Log a Cleanup</h2>
+            <p>Click anywhere on the map to set your location, then fill out this form!</p>
+            
+            <form id="cleanupForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="blockName">Area Cleaned</label>
+                        <input type="text" id="blockName" required placeholder="e.g., 35th Ave from St. Paul to Clayton">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="volunteer">Your Name</label>
+                        <input type="text" id="volunteer" required placeholder="First name or nickname">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bags">Bags Collected</label>
+                        <input type="number" id="bags" min="0" required placeholder="0">
+                    </div>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="lat">Latitude</label>
+                        <input type="number" id="lat" step="0.0001" required placeholder="Click map to auto-fill" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lng">Longitude</label>
+                        <input type="number" id="lng" step="0.0001" required placeholder="Click map to auto-fill" readonly>
+                    </div>
+                </div>
+                
+                <button type="submit" class="button" id="submitBtn">Log Cleanup</button>
+                
+                <div id="formMessage"></div>
+            </form>
+        </div>
+        
+        <!-- About Section -->
+       <div class="about-section">
+    <h2>What is Trash Party?</h2>
+    <p>Tired of seeing litter on your street? Same.</p>
+    
+    <p>Trash Party is a simple, grassroots way to take pride in where you live — no waiting, no red tape, just neighbors showing up.</p>
+    
+    <p>Step outside, invite a friend, and turn a quick cleanup into something social. Whether you have 15 minutes or an hour, you'll get some fresh air, move your body, meet people, and leave your block better than you found it.</p>
+    
+    <p>No formal membership, no meetings, no hassle. We just share the belief that all trash belongs in a can.</p>
+</div> 
+        <!-- Footer -->
+        <footer>
+    <div style="text-align: center; margin-bottom: 30px;">
+        <img src="trash-party-logo.png" alt="Trash Party Logo" style="height: 100px; width: auto;">
+    </div>
+    
+    <h3>Feedback?</h3>
+    <p>Contact us at: <a href="mailto:hello-trash@trashparty.org">hello-trash@trashparty.org</a></p>
+    
+            <p style="margin-top: 20px;"><strong>Privacy Note:</strong> We collect only the information you provide (name, location, email) to track neighborhood cleanup efforts and send occasional updates. Your data is stored securely and never shared with third parties.</p>
+            
+            <div class="disclaimer">
+                <strong>Safety Disclaimer:</strong> Trash Party cleanups are not organized activities. By participating, you acknowledge that outdoor cleanup involves inherent risks (uneven ground, sharp objects, weather, etc.) and you take responsibility for your own safety. Please wear gloves, use caution, and skip anything that looks unsafe. When in doubt, don't pick it up.
+            </div>
+        </footer>
+    </div>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Firebase and Main App Script -->
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+        
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBJEBbDfgShAp-vzCVm2ysivy1MX5MFZhQ",
+            authDomain: "clayton-cleanup.firebaseapp.com",
+            projectId: "clayton-cleanup",
+            storageBucket: "clayton-cleanup.firebasestorage.app",
+            messagingSenderId: "753353969491",
+            appId: "1:753353969491:web:d8f2a5e55cc91915e5dba6"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Make Leaflet available
+        const L = window.L;
+        
+        // Initialize the map
+        const map = L.map('map').setView([39.756397, -104.966593], 15);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+// Add neighborhood boundary rectangle
+const bounds = [
+    [39.750739, -104.973384],
+    [39.762055, -104.959801]
+];
+
+L.rectangle(bounds, {
+    color: '#2d5016',
+    weight: 5,
+    fillColor: '#4CAF50',
+    fillOpacity: 0.1,
+    dashArray: '10, 5'
+}).addTo(map);
+
+// Add gray overlay outside Whittier boundary
+const outsideClaytonPolygon = [
+    // Outer boundary (entire visible map area - make it large)
+    [
+        [40.0, -105.5],  // Northwest (way outside)
+        [40.0, -104.5],  // Northeast (way outside)
+        [39.5, -104.5],  // Southeast (way outside)
+        [39.5, -105.5],  // Southwest (way outside)
+        [40.0, -105.5]   // Close the loop
+    ],
+    // Inner boundary (Whittier - this creates the hole)
+[
+    [39.750739, -104.973384],  // SW corner
+    [39.750739, -104.959801],  // SE corner
+    [39.762055, -104.959801],  // NE corner
+    [39.762055, -104.973384],  // NW corner
+    [39.750739, -104.973384]   // Close the loop
+]
+];
+
+L.polygon(outsideClaytonPolygon, {
+    color: 'transparent',
+    fillColor: '#333333',
+    fillOpacity: 0.4,
+    interactive: false
+}).addTo(map);
+
+// Function to determine marker color
+function getMarkerColor(dateString) {
+    const cleanedDate = new Date(dateString);
+    const today = new Date();
+    const daysSince = (today - cleanedDate) / (1000 * 60 * 60 * 24);
+    
+    if (daysSince <= 3) return 'green';
+    if (daysSince <= 14) return 'orange';
+    return 'red';
+}
+
+// Function to add a marker to the map
+function addMarkerToMap(cleanup) {
+    const color = getMarkerColor(cleanup.lastCleaned);
+    
+    const icon = L.divIcon({
+        className: 'custom-marker',
+        html: `<div style="background-color: ${color}; width: 25px; height: 25px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+        iconSize: [25, 25]
+    });
+    
+    const marker = L.marker([cleanup.lat, cleanup.lng], { icon: icon }).addTo(map);
+    
+    const neighborName = cleanup.volunteer || cleanup.neighbor || "Unknown";
+    marker.bindPopup(`<strong>${cleanup.blockName}</strong><br>Last cleaned: ${cleanup.lastCleaned}<br>Neighbor: ${neighborName}<br>Bags collected: ${cleanup.bags}`);
+}
+
+// Load all cleanups from Firebase
+async function loadCleanups() {
+    try {
+        // Load user-submitted cleanups from Firebase
+       const q = query(collection(db, "cleanups-whittier"), orderBy("lastCleaned", "desc"));
+const querySnapshot = await getDocs(q);
+        
+        querySnapshot.forEach((doc) => {
+            const cleanup = doc.data();
+            addMarkerToMap(cleanup);
+        });
+        
+        // Calculate total bags and unique neighbors
+        let totalBags = 0;
+        const uniqueNeighbors = new Set();
+        
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            totalBags += data.bags || 0;
+            
+            // Add volunteer name to set (case-insensitive, trimmed)
+            if (data.volunteer) {
+                uniqueNeighbors.add(data.volunteer.trim().toLowerCase());
+            }
+        });
+        
+        // Update counters
+        document.getElementById('bagCounter').textContent = totalBags;
+        document.getElementById('neighborCounter').textContent = uniqueNeighbors.size;
+        document.getElementById('poundsCounter').textContent = totalBags * 5;
+        updateProgressBar(totalBags * 5);
+
+        // Hide loading message
+        document.getElementById('loadingMessage').textContent = 
+            `✅ Loaded ${querySnapshot.size} cleanup(s) from the database`;
+        
+        setTimeout(() => {
+            document.getElementById('loadingMessage').style.display = 'none';
+        }, 3000);
+        
+    } catch (error) {
+        console.error("Error loading cleanups:", error);
+        document.getElementById('loadingMessage').textContent = 
+            '⚠️ Error loading data. Your new cleanups will still save!';
+    }
+}
+
+// Load cleanups when page loads
+loadCleanups();
+
+// Click map to set coordinates
+let tempMarker = null;
+
+map.on('click', function(e) {
+    const clickLat = e.latlng.lat;
+    const clickLng = e.latlng.lng;
+    
+    // Check if click is inside Whittier boundary
+   const inBounds = (
+    clickLat >= 39.750739 && clickLat <= 39.762055 &&
+    clickLng >= -104.973384 && clickLng <= -104.959801
+);
+    
+   if (!inBounds) {
+    // Create a popup at the click location
+    L.popup()
+        .setLatLng(e.latlng)
+        .setContent(`
+            <div style="text-align: center; padding: 10px;">
+                <strong style="color: #c62828;">Outside Whittier Boundary</strong><br>
+                <p style="margin: 10px 0; font-size: 0.9em;">Want to start Trash Party in your neighborhood?</p>
+                <a href="mailto:hello-trash@trashparty.org" style="color: #2d5016; font-weight: 600;">Email us to get started →</a>
+            </div>
+        `)
+        .openOn(map);
+    
+    return; // Don't place marker
+}
+    
+    // Rest of existing click handler code...
+    if (tempMarker) {
+        map.removeLayer(tempMarker);
+    }
+    
+    tempMarker = L.marker([e.latlng.lat, e.latlng.lng], {
+        icon: L.divIcon({
+            className: 'temp-marker',
+            html: `<div style="background-color: #2196F3; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(33, 150, 243, 0.5);"></div>`,
+            iconSize: [30, 30]
+        })
+    }).addTo(map);
+    
+    document.getElementById('lat').value = e.latlng.lat.toFixed(6);
+    document.getElementById('lng').value = e.latlng.lng.toFixed(6);
+    
+    document.getElementById('cleanupForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+// Handle cleanup form submission
+document.getElementById('cleanupForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    const messageEl = document.getElementById('formMessage');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Thanks Neighbor!';
+    
+    // Get form values
+    const newCleanup = {
+        blockName: document.getElementById('blockName').value,
+        volunteer: document.getElementById('volunteer').value,
+        bags: parseInt(document.getElementById('bags').value),
+        lat: parseFloat(document.getElementById('lat').value),
+        lng: parseFloat(document.getElementById('lng').value),
+        lastCleaned: new Date().toISOString().split('T')[0]
+    };
+    
+    // Validate the submission
+    if (newCleanup.bags > 50) {
+        messageEl.textContent = '⚠️ 50+ bags is amazing! Please contact us at hello-trash@trashparty.org to verify this cleanup.';
+        messageEl.className = 'message error';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Log Cleanup';
+        return;
+    }
+
+    if (newCleanup.bags < 1) {
+        messageEl.textContent = '⚠️ Please enter at least 1 bag collected.';
+        messageEl.className = 'message error';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Log Cleanup';
+        return;
+    }
+
+    if (newCleanup.volunteer.trim().length < 2) {
+        messageEl.textContent = '⚠️ Please enter a valid name (at least 2 characters).';
+        messageEl.className = 'message error';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Log Cleanup';
+        return;
+    }
+
+    if (newCleanup.blockName.trim().length < 3) {
+        messageEl.textContent = '⚠️ Please describe the area you cleaned (at least 3 characters).';
+        messageEl.className = 'message error';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Log Cleanup';
+        return;
+    }
+
+    // Validate location is inside Whittier
+    const inBounds = (
+    newCleanup.lat >= 39.750739 && newCleanup.lat <= 39.762055 &&
+    newCleanup.lng >= -104.973384 && newCleanup.lng <= -104.959801
+);
+
+    if (!inBounds) {
+        messageEl.textContent = '⚠️ Cleanup location must be inside the Whittier neighborhood boundary.';
+        messageEl.className = 'message error';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Log Cleanup';
+        return;
+    }
+    
+    try {
+        // Save to Firebase
+        await addDoc(collection(db, "cleanups-whittier"), newCleanup);
+        
+        // Remove temporary marker
+        if (tempMarker) {
+            map.removeLayer(tempMarker);
+            tempMarker = null;
+        }
+        
+        // Add the real marker to the map
+        addMarkerToMap(newCleanup);
+
+        // Update bag counter
+        const currentBagCount = parseInt(document.getElementById('bagCounter').textContent);
+        document.getElementById('bagCounter').textContent = currentBagCount + newCleanup.bags;
+
+        // Update neighbor counter
+        const q = query(collection(db, "cleanups-whittier"));
+        const snapshot = await getDocs(q);
+        const uniqueNeighbors = new Set();
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.volunteer) {
+                uniqueNeighbors.add(data.volunteer.trim().toLowerCase());
+            }
+        });
+        document.getElementById('neighborCounter').textContent = uniqueNeighbors.size;
+        
+        // Update pounds counter
+        const currentPounds = parseInt(document.getElementById('poundsCounter').textContent);
+        document.getElementById('poundsCounter').textContent = currentPounds + (newCleanup.bags * 5);
+        updateProgressBar(currentPounds + (newCleanup.bags * 5));
+
+        // Show success message
+        messageEl.textContent = `Cleanup saved! ${newCleanup.bags} bag(s) at ${newCleanup.blockName}`;
+        messageEl.className = 'message success';
+        
+        // Clear the form
+        this.reset();
+        
+        // Clear success message after 5 seconds
+        setTimeout(() => {
+            messageEl.textContent = '';
+            messageEl.className = '';
+        }, 5000);
+        
+    } catch (error) {
+        console.error("Error saving cleanup:", error);
+        messageEl.textContent = '❌ Error saving. Please try again.';
+        messageEl.className = 'message error';
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Log Cleanup';
+    }
+});        
+        // Handle email form submission
+        document.getElementById('emailForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('emailSubmitBtn');
+            const messageEl = document.getElementById('emailMessage');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+            
+            const email = document.getElementById('emailInput').value;
+            
+            try {
+                // Save email to Firebase
+                await addDoc(collection(db, "emailSignups"), {
+                    email: email,
+                    signupDate: new Date().toISOString()
+                });
+                
+                // Show success message
+                messageEl.textContent = 'Thanks, we\'ll keep you posted!';
+                messageEl.className = 'message success';
+                
+                // Clear the form
+                this.reset();
+                
+                // Clear message after 5 seconds
+                setTimeout(() => {
+                    messageEl.textContent = '';
+                    messageEl.className = '';
+                }, 5000);
+                
+            } catch (error) {
+                console.error("Error saving email:", error);
+                messageEl.textContent = '❌ Error: ' + error.message;
+                messageEl.className = 'message error';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Sign Up';
+            }
+        });
+        // Update progress bar
+function updateProgressBar(pounds) {
+    const goal = 2000;
+    const percentage = Math.min((pounds / goal) * 100, 100);
+    
+    document.getElementById('progressBar').style.width = percentage + '%';
+    document.getElementById('progressLbs').textContent = pounds.toLocaleString();
+    
+    if (percentage > 15) {
+        document.getElementById('progressText').textContent = Math.round(percentage) + '%';
+    } else {
+        document.getElementById('progressText').textContent = '';
+    }
+}
+    </script>
+</body>
+</html>

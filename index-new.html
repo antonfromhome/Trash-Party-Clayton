@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trash Party - Neighbors cleaning up, one block at a time</title>
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ESJJP6CSH6"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-ESJJP6CSH6');
+    </script>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #fafafa;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%);
+            padding: 80px 20px 60px;
+            text-align: center;
+            border-bottom: 3px solid #4CAF50;
+        }
+        
+        .hero h1 {
+            font-size: 4.5em;
+            font-weight: 900;
+            color: #2d5016;
+            margin-bottom: 16px;
+            letter-spacing: -2px;
+        }
+        
+        .hero p {
+            font-size: 1.5em;
+            color: #555;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Universal Stats */
+        .universal-stats {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            margin: -60px auto 60px;
+            max-width: 1000px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            text-align: center;
+        }
+        
+        .stat-item h2 {
+            font-size: 4em;
+            font-weight: 800;
+            color: #2d5016;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+        
+        .stat-item p {
+            font-size: 0.95em;
+            color: #666;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Map Section */
+        .map-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 60px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .section-header h2 {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+        
+        .section-header p {
+            font-size: 1.1em;
+            color: #666;
+        }
+        
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        /* Neighborhood Cards */
+        .neighborhoods-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+        
+        .neighborhood-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .neighborhood-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .neighborhood-card h3 {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #2d5016;
+            margin-bottom: 8px;
+        }
+        
+        .neighborhood-card .location {
+            font-size: 0.95em;
+            color: #888;
+            margin-bottom: 20px;
+        }
+        
+        .neighborhood-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .neighborhood-stats span {
+            font-size: 0.9em;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .neighborhood-stats strong {
+            color: #2d5016;
+        }
+        
+        .visit-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #2d5016;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        
+        .visit-link::after {
+            content: "→";
+            transition: transform 0.3s ease;
+        }
+        
+        .neighborhood-card:hover .visit-link::after {
+            transform: translateX(4px);
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%);
+            border-radius: 20px;
+            padding: 60px 40px;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #2d5016;
+            margin-bottom: 20px;
+        }
+        
+        .cta-section p {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .button {
+            background: #2d5016;
+            color: white;
+            padding: 18px 48px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+        
+        .button:hover {
+            background: #3d6b1f;
+            transform: translateY(-2px);
+        }
+        
+        /* Footer */
+        footer {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+        
+        footer img {
+            height: 80px;
+            margin-bottom: 20px;
+        }
+        
+        footer p {
+            color: #666;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+        }
+        
+        footer a {
+            color: #2d5016;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #2d5016;
+        }
+        
+        /* Mobile */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5em;
+            }
+            
+            .hero p {
+                font-size: 1.1em;
+            }
+            
+            .universal-stats {
+                margin: -40px 20px 40px;
+                padding: 30px 20px;
+                gap: 30px;
+            }
+            
+            .stat-item h2 {
+                font-size: 3em;
+            }
+            
+            #map {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero -->
+    <div class="hero">
+        <h1>Trash Party</h1>
+        <p>Neighbors cleaning up, one block at a time</p>
+    </div>
+    
+    <div class="container">
+        <!-- Universal Stats -->
+        <div class="universal-stats">
+            <div class="stat-item">
+                <h2 id="totalNeighborhoods">0</h2>
+                <p>Active Neighborhoods</p>
+            </div>
+            <div class="stat-item">
+                <h2 id="totalBags">0</h2>
+                <p>Bags Collected</p>
+            </div>
+            <div class="stat-item">
+                <h2 id="totalPounds">0</h2>
+                <p>Pounds Removed</p>
+            </div>
+        </div>
+        
+        <!-- Map Section -->
+        <div class="map-section">
+            <div class="section-header">
+                <h2>Active Neighborhoods</h2>
+                <p>Click a neighborhood to see their cleanup map</p>
+                <div id="loadingMessage" class="loading">Loading neighborhoods...</div>
+            </div>
+            
+            <div id="map"></div>
+        </div>
+        
+        <!-- Neighborhood Cards -->
+        <div id="neighborhoodCards" class="neighborhoods-grid">
+            <!-- Dynamically populated -->
+        </div>
+        
+        <!-- CTA -->
+        <div class="cta-section">
+            <h2>Want to start Trash Party in your neighborhood?</h2>
+            <p>Join the movement. Clean up your streets. Build community.</p>
+            <a href="mailto:hello-trash@trashparty.org?subject=Start a Trash Party in [Your Neighborhood]" class="button">Start a Trash Party</a>
+        </div>
+        
+        <!-- Footer -->
+        <footer>
+            <img src="trash-party-logo.png" alt="Trash Party Logo">
+            <p>Questions? Email <a href="mailto:hello-trash@trashparty.org">hello-trash@trashparty.org</a></p>
+            <p style="margin-top: 20px; font-size: 0.85em; color: #888;">
+                 Less litter, more community
+            </p>
+        </footer>
+    </div>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Firebase and Main App Script -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBJEBbDfgShAp-vzCVm2ysivy1MX5MFZhQ",
+            authDomain: "clayton-cleanup.firebaseapp.com",
+            projectId: "clayton-cleanup",
+            storageBucket: "clayton-cleanup.firebasestorage.app",
+            messagingSenderId: "753353969491",
+            appId: "1:753353969491:web:d8f2a5e55cc91915e5dba6"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const L = window.L;
+        
+        // Initialize map centered on Denver
+        const map = L.map('map').setView([39.7392, -104.9903], 11);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+        
+        // Neighborhood data (will come from Firebase later)
+        const neighborhoods = [
+            {
+                name: "Clayton",
+                city: "Denver, CO",
+                slug: "clayton",
+                center: [39.766233, -104.954529],
+                bounds: [
+                    [39.761833, -104.959778],
+                    [39.773444, -104.940472]
+                ],
+                bags: 12,
+                neighbors: 3,
+                pounds: 60
+            }
+            // Add more neighborhoods here as they come online
+        ];
+        
+        // Calculate totals
+        let totalBags = 0;
+        let totalPounds = 0;
+        
+        neighborhoods.forEach(n => {
+            totalBags += n.bags;
+            totalPounds += n.pounds;
+        });
+        
+        // Update universal stats
+        document.getElementById('totalNeighborhoods').textContent = neighborhoods.length;
+        document.getElementById('totalBags').textContent = totalBags;
+        document.getElementById('totalPounds').textContent = totalPounds;
+        
+        // Add neighborhoods to map
+        neighborhoods.forEach(neighborhood => {
+            // Draw boundary rectangle
+            const rectangle = L.rectangle(neighborhood.bounds, {
+                color: '#2d5016',
+                weight: 3,
+                fillColor: '#4CAF50',
+                fillOpacity: 0.3
+            }).addTo(map);
+            
+            // Add click handler
+            rectangle.on('click', () => {
+                window.location.href = `/${neighborhood.slug}`;
+            });
+            
+            // Add popup
+            rectangle.bindPopup(`
+                <strong>${neighborhood.name}</strong><br>
+                ${neighborhood.bags} bags • ${neighborhood.neighbors} neighbors<br>
+                <a href="/${neighborhood.slug}" style="color: #2d5016; font-weight: 600;">Visit →</a>
+            `);
+            
+            // Add marker at center
+            const marker = L.marker(neighborhood.center, {
+                icon: L.divIcon({
+                    className: 'neighborhood-marker',
+                    html: `<div style="background: #2d5016; color: white; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 14px; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">${neighborhood.name}</div>`,
+                    iconSize: [100, 40]
+                })
+            }).addTo(map);
+            
+            marker.on('click', () => {
+                window.location.href = `/${neighborhood.slug}`;
+            });
+        });
+        
+        // Generate neighborhood cards
+        const cardsContainer = document.getElementById('neighborhoodCards');
+        
+        neighborhoods.forEach(neighborhood => {
+            const card = document.createElement('a');
+            card.href = `/${neighborhood.slug}`;
+            card.className = 'neighborhood-card';
+            card.innerHTML = `
+                <h3>${neighborhood.name}</h3>
+                <div class="location">${neighborhood.city}</div>
+                <div class="neighborhood-stats">
+                    <span><strong>${neighborhood.bags}</strong> bags</span>
+                    <span><strong>${neighborhood.neighbors}</strong> neighbors</span>
+                    <span><strong>${neighborhood.pounds}</strong> lbs</span>
+                </div>
+                <div class="visit-link">Visit neighborhood</div>
+            `;
+            cardsContainer.appendChild(card);
+        });
+        
+        // Hide loading message
+        document.getElementById('loadingMessage').style.display = 'none';
+    </script>
+</body>
+</html>
