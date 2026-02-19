@@ -266,7 +266,7 @@
     <!-- Firebase and Main App Script -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-        import { getFirestore, collection, getDocs, query } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getFirestore, collection, getDocs, query, addDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyBJEBbDfgShAp-vzCVm2ysivy1MX5MFZhQ",
@@ -438,6 +438,23 @@
 
         // Load everything on page load
         loadAllStats();
+        // Import Firebase (add this at the top of the script section)
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+// Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyBJEBbDfgShAp-vzCVm2ysivy1MX5MFZhQ",
+    authDomain: "clayton-cleanup.firebaseapp.com",
+    projectId: "clayton-cleanup",
+    storageBucket: "clayton-cleanup.firebasestorage.app",
+    messagingSenderId: "753353969491",
+    appId: "1:753353969491:web:d8f2a5e55cc91915e5dba6"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
         // Handle neighborhood request form
 document.getElementById('neighborhoodRequestForm').addEventListener('submit', async function(e) {
     e.preventDefault();
