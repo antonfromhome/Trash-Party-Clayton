@@ -193,12 +193,17 @@
             <p class="subtitle">Select your neighborhood to log a cleanup or see local progress</p>
             <div id="neighborhoodCards" class="neighborhoods-grid"></div>
         </div>
-        <!-- Email Signup Section -->
+<!-- Email Signup Section -->
 <div style="background: white; border-radius: 20px; padding: 50px 40px; margin-bottom: 60px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); max-width: 600px; margin-left: auto; margin-right: auto;">
     <h2 style="font-size: 2em; font-weight: 700; color: #1a1a1a; margin-bottom: 10px; text-align: center;">Connect</h2>
     <p style="color: #666; margin-bottom: 30px; font-size: 1.05em; text-align: center;">A trashy mailing list for infrequent Trash Party updates</p>
     
     <form id="landingEmailForm">
+        <!-- Honeypot field -->
+        <div style="position: absolute; left: -5000px;" aria-hidden="true">
+            <input type="text" name="honeypot" id="emailHoneypot" tabindex="-1" autocomplete="off">
+        </div>
+        
         <div style="margin-bottom: 20px;">
             <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 0.95em;">Email Address</label>
             <input type="email" id="landingEmailInput" required placeholder="your.email@example.com" style="width: 100%; padding: 14px 16px; border: 2px solid #e8e8e8; border-radius: 12px; font-size: 1em; font-family: 'Inter', sans-serif; background: #fafafa;">
@@ -208,8 +213,7 @@
         
         <div id="landingEmailMessage" style="margin-top: 20px;"></div>
     </form>
-</div>
-<!-- What is Trash Party Section -->
+</div><!-- What is Trash Party Section -->
 <div style="background: white; border-radius: 20px; padding: 50px 40px; margin-bottom: 40px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);">
     <h2 style="font-size: 2em; font-weight: 700; color: #1a1a1a; margin-bottom: 20px;">What is Trash Party?</h2>
     
@@ -222,7 +226,7 @@
     <p style="color: #2d5016; font-size: 1.1em; line-height: 1.8; font-weight: 500; font-style: italic;">No formal membership, no meetings, no hassle. We just share the belief that all trash belongs in a can.</p>
 </div>
         <!-- CTA -->
-       <!-- Start a Trash Party Section -->
+<!-- Start a Trash Party Section -->
 <div style="background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%); border-radius: 20px; padding: 60px 40px; margin-bottom: 60px; text-align: center;">
     <h2 style="font-size: 2.2em; font-weight: 700; color: #2d5016; margin-bottom: 15px;">Want to bring Trash Party to your neighborhood?</h2>
     <p style="font-size: 1.1em; color: #555; margin-bottom: 30px;">Fill out the form below and we'll help you get started!</p>
@@ -230,6 +234,11 @@
     <!-- Contact Form -->
     <div style="max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);">
         <form id="neighborhoodRequestForm">
+            <!-- Honeypot field - hidden from humans, visible to bots -->
+            <div style="position: absolute; left: -5000px;" aria-hidden="true">
+                <input type="text" name="honeypot" id="requestHoneypot" tabindex="-1" autocomplete="off">
+            </div>
+            
             <div style="margin-bottom: 20px; text-align: left;">
                 <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 0.95em;">Name</label>
                 <input type="text" id="requestName" required placeholder="Your name" style="width: 100%; padding: 14px 16px; border: 2px solid #e8e8e8; border-radius: 12px; font-size: 1em; font-family: 'Inter', sans-serif; background: #fafafa;">
@@ -256,7 +265,6 @@
         </form>
     </div>
 </div>
-
        
     </div>
 
@@ -439,7 +447,7 @@ import { getFirestore, collection, getDocs, query, addDoc } from 'https://www.gs
         // Load everything on page load
         loadAllStats();
        
-        // Handle neighborhood request form
+// Handle neighborhood request form
 document.getElementById('neighborhoodRequestForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -448,6 +456,16 @@ document.getElementById('neighborhoodRequestForm').addEventListener('submit', as
     submitBtn.disabled = true;
     submitBtn.textContent = 'Sending...';
     
+    // Check honeypot
+    if (document.getElementById('requestHoneypot').value !== '') {
+        // Bot detected - silently reject
+        messageEl.innerHTML = '<p style="background: #e8f5e9; color: #2d5016; padding: 12px 20px; border-radius: 8px; font-weight: 500;">Thanks! We\'ll be in touch soon.</p>';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Request';
+        this.reset();
+        return; // Don't save to database
+    }
+
     const requestData = {
         name: document.getElementById('requestName').value,
         email: document.getElementById('requestEmail').value,
@@ -474,7 +492,7 @@ document.getElementById('neighborhoodRequestForm').addEventListener('submit', as
         submitBtn.textContent = 'Submit Request';
     }
 });
-    // Handle landing page email signup
+// Handle landing page email signup
 document.getElementById('landingEmailForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -484,7 +502,17 @@ document.getElementById('landingEmailForm').addEventListener('submit', async fun
     submitBtn.textContent = 'Saving...';
     
     const email = document.getElementById('landingEmailInput').value;
-    
+
+    // Check honeypot
+    if (document.getElementById('emailHoneypot').value !== '') {
+        // Bot detected - pretend success
+        messageEl.innerHTML = '<p style="background: #e8f5e9; color: #2d5016; padding: 12px 20px; border-radius: 8px; font-weight: 500; text-align: center;">Thanks, we\'ll keep you posted!</p>';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign Up';
+        this.reset();
+        return;
+    }
+
     try {
         await addDoc(collection(db, "emailSignups"), {
             email: email,
