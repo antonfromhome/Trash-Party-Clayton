@@ -37,19 +37,18 @@
 
         .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
 
-        .universal-stats {
-            background: white;
-            border-radius: 20px;
-            padding: 50px 40px;
-            margin: -60px auto 60px;
-            max-width: 1000px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            text-align: center;
-        }
-        .stat-item h2 { font-size: 4em; font-weight: 800; color: #2d5016; margin-bottom: 8px; line-height: 1; }
+.universal-stats {
+    background: white;
+    border-radius: 20px;
+    padding: 50px 40px;
+    margin: -60px auto 60px;
+    max-width: 1200px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    text-align: center;
+}        .stat-item h2 { font-size: 4em; font-weight: 800; color: #2d5016; margin-bottom: 8px; line-height: 1; }
         .stat-item p { font-size: 0.95em; color: #666; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
 
         .map-section {
@@ -162,20 +161,24 @@
 
     <div class="container">
         <!-- Universal Stats -->
-        <div class="universal-stats">
-            <div class="stat-item">
-                <h2 id="totalNeighborhoods">0</h2>
-                <p>Neighborhoods</p>
-            </div>
-            <div class="stat-item">
-                <h2 id="totalBags">0</h2>
-                <p>Bags Collected</p>
-            </div>
-            <div class="stat-item">
-                <h2 id="totalPounds">0</h2>
-                <p>Pounds Removed</p>
-            </div>
-        </div>
+<div class="universal-stats">
+    <div class="stat-item">
+        <h2 id="totalNeighborhoods">0</h2>
+        <p>Active Neighborhoods</p>
+    </div>
+    <div class="stat-item">
+        <h2 id="totalNeighbors">0</h2>
+        <p>Neighbors Helping</p>
+    </div>
+    <div class="stat-item">
+        <h2 id="totalBags">0</h2>
+        <p>Bags Collected</p>
+    </div>
+    <div class="stat-item">
+        <h2 id="totalPounds">0</h2>
+        <p>Pounds of Litter Picked Up</p>
+    </div>
+</div>
 
         <!-- Map -->
         <div class="map-section">
@@ -334,25 +337,27 @@ import { getFirestore, collection, getDocs, query, addDoc } from 'https://www.gs
 
         // Load stats and render everything
         async function loadAllStats() {
-            let totalBags = 0;
-            let totalPounds = 0;
-            let activeNeighborhoods = 0;
+    let totalBags = 0;
+    let totalPounds = 0;
+    let activeNeighborhoods = 0;
+    const allNeighbors = new Set(); // Track unique neighbors across all neighborhoods
 
-            // Fetch real data for each neighborhood
-            await Promise.all(neighborhoods.map(async (n) => {
+    // Fetch real data for each neighborhood
+    await Promise.all(neighborhoods.map(async (n) => {
                 try {
                     const snap = await getDocs(query(collection(db, n.collection)));
                     let bags = 0;
                     const nbrs = new Set();
                     
                     snap.forEach(doc => {
-                        const d = doc.data();
-                        bags += d.bags || 0;
-                        if (d.volunteer) {
-                            nbrs.add(d.volunteer.trim().toLowerCase());
-                        }
-                    });
-                    
+    const d = doc.data();
+    bags += d.bags || 0;
+    if (d.volunteer) {
+        const volunteerName = d.volunteer.trim().toLowerCase();
+        nbrs.add(volunteerName);
+        allNeighbors.add(volunteerName); // Add to global set
+    }
+});
                     n.bags = bags;
                     n.neighbors = nbrs.size;
                     n.pounds = bags * 5;
@@ -369,11 +374,11 @@ import { getFirestore, collection, getDocs, query, addDoc } from 'https://www.gs
                 }
             }));
 
-            // Update stats
-            document.getElementById('totalNeighborhoods').textContent = activeNeighborhoods;
-            document.getElementById('totalBags').textContent = totalBags;
-            document.getElementById('totalPounds').textContent = totalPounds;
-
+// Update stats
+document.getElementById('totalNeighborhoods').textContent = activeNeighborhoods;
+document.getElementById('totalNeighbors').textContent = allNeighbors.size;
+document.getElementById('totalBags').textContent = totalBags;
+document.getElementById('totalPounds').textContent = '~' + totalPounds;
             // Render map and cards
             renderMap();
             renderCards();
