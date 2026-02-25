@@ -20,7 +20,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -143,224 +143,185 @@
             .cta-section { padding: 40px 20px; }
             .cta-section h2 { font-size: 1.8em; }
         }
-   /* Trash Party Header Banner */
-.banner {
-    width: 100%;
-    max-width: 960px;
-    height: 120px;
-    background: #1a2e0a;
-    border-radius: 10px;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    padding: 0 36px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.3);
-    gap: 0;
-    margin: 40px auto;
+/* Site Banner - New Design */
+:root {
+    --green-dark:  #1a2e0a;
+    --green-mid:   #2d5016;
+    --green-bright:#7ccd3c;
+    --green-light: #4CAF50;
+    --off-white:   #f4f2ed;
 }
 
-.banner::before {
+.site-banner {
+    width: 100%;
+    background: var(--off-white);
+    border-bottom: 1px solid rgba(45, 80, 22, 0.12);
+    position: relative;
+    overflow: hidden;
+}
+
+.site-banner::before {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: 
-        radial-gradient(circle at 10% 120%, rgba(76, 175, 80, 0.14) 0%, transparent 55%),
-        radial-gradient(circle at 90% -20%, rgba(139, 195, 74, 0.10) 0%, transparent 50%),
-        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234CAF50' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
     pointer-events: none;
+    opacity: 0.6;
 }
 
-.banner::after {
+.site-banner::after {
     content: '';
     position: absolute;
-    top: 0; right: 0;
-    width: 200px; height: 200px;
-    background: radial-gradient(circle at top right, rgba(124, 205, 60, 0.13), transparent 70%);
-    pointer-events: none;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--green-bright) 0%, var(--green-light) 30%, transparent 70%);
 }
 
-.bottom-stripe {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #7ccd3c 0%, #4CAF50 40%, transparent 100%);
-}
-
-.left {
+.banner-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+    height: 72px;
     display: flex;
     align-items: center;
-    gap: 20px;
+    justify-content: space-between;
     position: relative;
-    z-index: 2;
+    z-index: 1;
+}
+
+.banner-wordmark {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
     flex-shrink: 0;
 }
 
-.icon-wrap {
-    opacity: 0.75;
-    flex-shrink: 0;
-}
-
-.wordmark {
+.wordmark-text {
     display: flex;
     flex-direction: column;
     gap: 1px;
 }
 
-.wordmark .label {
-    font-family: 'Space Mono', monospace;
+.wordmark-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    line-height: 1;
+    letter-spacing: -0.5px;
+    color: var(--green-dark);
+}
+
+.wordmark-name .party {
+    color: var(--green-bright);
+}
+
+.wordmark-domain {
+    font-family: 'DM Mono', monospace;
     font-size: 9px;
-    letter-spacing: 4px;
-    color: #7ccd3c;
-    text-transform: uppercase;
-    font-style: italic;
+    color: rgba(26, 46, 10, 0.35);
+    letter-spacing: 1.5px;
+    text-transform: lowercase;
 }
 
-.wordmark .title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 52px;
-    line-height: 0.88;
-    letter-spacing: 1px;
-}
-
-.wordmark .title .trash { color: #ffffff; }
-.wordmark .title .party { color: #7ccd3c; }
-
-.wordmark .domain {
-    font-family: 'Space Mono', monospace;
-    font-size: 9px;
-    color: rgba(255,255,255,0.38);
-    letter-spacing: 2px;
-    margin-top: 2px;
-}
-
-.vert-divider {
-    width: 1px;
-    height: 56px;
-    background: rgba(124, 205, 60, 0.25);
-    margin: 0 32px;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 2;
-}
-
-.center {
-    flex: 1;
-    position: relative;
-    z-index: 2;
+.banner-tagline {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     flex-direction: column;
-    gap: 6px;
-}
-
-.tagline {
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    color: rgba(255,255,255,0.75);
-    letter-spacing: 0.5px;
-    line-height: 1.6;
-    font-style: italic;
-}
-
-.tagline em {
-    color: #7ccd3c;
-    font-style: normal;
-    font-weight: 700;
-}
-
-.sub-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 3px;
-    color: rgba(255,255,255,0.3);
-    text-transform: uppercase;
-}
-
-.dots {
-    position: absolute;
-    bottom: 14px;
-    right: 36px;
-    display: flex;
-    gap: 5px;
     align-items: center;
-    z-index: 2;
+    gap: 3px;
 }
 
-.dot {
-    width: 5px; height: 5px;
+.tagline-main {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--green-dark);
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+.tagline-main em {
+    font-style: normal;
+    color: var(--green-bright);
+    font-weight: 500;
+}
+
+.banner-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+}
+
+.live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--green-mid);
+    opacity: 0.7;
+}
+
+.live-dot {
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
-    background: #7ccd3c;
-    opacity: 0.5;
+    background: var(--green-bright);
+    animation: live-pulse 2s ease-in-out infinite;
 }
 
-.dot:nth-child(2) { opacity: 0.3; width: 4px; height: 4px; }
-.dot:nth-child(3) { opacity: 0.15; width: 3px; height: 3px; }
-
-.banner:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 50px rgba(0,0,0,0.35);
-    transition: all 0.2s ease;
+@keyframes live-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
 }
 
 @media (max-width: 768px) {
-    .banner {
-        height: auto;
-        padding: 24px 20px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 20px;
+    .banner-inner {
+        padding: 0 20px;
+        height: 60px;
     }
-    
-    .vert-divider { display: none; }
-    
-    .wordmark .title { font-size: 40px; }
-    
-    .center { align-items: flex-start; }
-    
-    .dots { display: none; }
+    .banner-tagline { display: none; }
+    .live-badge { display: none; }
+    .wordmark-name { font-size: 19px; }
+}
+
+@media (max-width: 480px) {
+    .wordmark-domain { display: none; }
 }
    </style>
 </head>
 <body>
-    <div class="banner">
-    <!-- Left: icon + wordmark -->
-    <div class="left">
-        <div class="icon-wrap">
-            <svg width="36" height="44" viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18 8 Q24 2 30 8" stroke="#7ccd3c" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-                <path d="M12 10 Q8 10 7 18 L5 44 Q5 52 24 52 Q43 52 43 44 L41 18 Q40 10 36 10 Z" fill="#7ccd3c" opacity="0.18"/>
-                <path d="M12 10 Q8 10 7 18 L5 44 Q5 52 24 52 Q43 52 43 44 L41 18 Q40 10 36 10 Z" stroke="#7ccd3c" stroke-width="2" fill="none" opacity="0.7"/>
-                <path d="M16 16 Q14 28 15 40" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.2"/>
-            </svg>
-        </div>
-        <div class="wordmark">
-            <span class="label">// Neighborhood cleanups</span>
-            <div class="title">
-                <span class="trash">Trash</span><span class="party">Party</span>
+<!-- Full-width site banner -->
+<header class="site-banner">
+    <div class="banner-inner">
+        <!-- Left: wordmark -->
+        <a href="/" class="banner-wordmark">
+            <div class="wordmark-text">
+                <div class="wordmark-name">Trash<span class="party">Party</span></div>
+                <div class="wordmark-domain">trashparty.org</div>
             </div>
-            <div class="domain">trashparty.org</div>
+        </a>
+
+        <!-- Center: tagline -->
+        <div class="banner-tagline">
+            <div class="tagline-main">Less litter, <em>more community</em></div>
+        </div>
+
+        <!-- Right: live badge -->
+        <div class="banner-right">
+            <div class="live-badge">
+                <div class="live-dot"></div>
+                Denver, CO
+            </div>
         </div>
     </div>
-
-    <div class="vert-divider"></div>
-
-    <!-- Center: tagline -->
-    <div class="center">
-        <div class="tagline">Less litter, <em>more community</em></div>
-        <div class="sub-label">No accounts · No meetings · Just neighbors taking care of their streets</div>
-    </div>
-
-    <div class="bottom-stripe"></div>
-
-    <div class="dots">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-    </div>
-</div>
-
+</header>
     <div class="container">
         <!-- Universal Stats -->
 <div class="universal-stats">
