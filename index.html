@@ -475,41 +475,59 @@ import { getFirestore, collection, getDocs, query, addDoc } from 'https://www.gs
         const L = window.L;
 
         // Neighborhood configurations with EXACT GPS coordinates
-        const neighborhoods = [
-            {
-                name: "Clayton",
-                city: "Denver, CO",
-                slug: "clayton",
-                collection: "cleanups",
-                center: [39.767245, -104.950215],
-                bounds: [[39.761753, -104.959830], [39.772737, -104.940599]]
-            },
-            {
-                name: "Cole",
-                city: "Denver, CO",
-                slug: "cole",
-                collection: "cleanups-cole",
-                center: [39.767465, -104.966484],
-                bounds: [[39.762022, -104.973372], [39.772907, -104.959596]]
-            },
-            {
-                name: "Skyland",
-                city: "Denver, CO",
-                slug: "skyland",
-                collection: "cleanups-skyland",
-                center: [39.756429, -104.950185],
-                bounds: [[39.750845, -104.959766], [39.762013, -104.940604]]
-            },
-            {
-                name: "Whittier",
-                city: "Denver, CO",
-                slug: "whittier",
-                collection: "cleanups-whittier",
-                center: [39.756397, -104.966593],
-                bounds: [[39.750739, -104.973384], [39.762055, -104.959801]]
-            }
-        ];
-
+const neighborhoods = [
+    {
+        name: "Clayton",
+        city: "Denver, CO",
+        slug: "clayton",
+        collection: "cleanups",
+        center: [39.767245, -104.950215],
+        bounds: [[39.761753, -104.959830], [39.772737, -104.940599]]
+    },
+    {
+        name: "Cole",
+        city: "Denver, CO",
+        slug: "cole",
+        collection: "cleanups-cole",
+        center: [39.767465, -104.966484],
+        bounds: [[39.762022, -104.973372], [39.772907, -104.959596]]
+    },
+    {
+        name: "Skyland",
+        city: "Denver, CO",
+        slug: "skyland",
+        collection: "cleanups-skyland",
+        center: [39.756429, -104.950185],
+        bounds: [[39.750845, -104.959766], [39.762013, -104.940604]]
+    },
+    {
+        name: "Whittier",
+        city: "Denver, CO",
+        slug: "whittier",
+        collection: "cleanups-whittier",
+        center: [39.756397, -104.966593],
+        bounds: [[39.750739, -104.973384], [39.762055, -104.959801]]
+    },
+    {
+        name: "Elyria-Swansea",
+        city: "Denver, CO",
+        slug: "elyria-swansea",
+        collection: "cleanups-elyria-swansea",
+        center: [39.7825, -104.955],
+        bounds: [
+            [39.794611, -104.940556],
+            [39.772778, -104.940556],
+            [39.772917, -104.968472],
+            [39.770278, -104.971917],
+            [39.775139, -104.978472],
+            [39.791056, -104.969028],
+            [39.790917, -104.960194],
+            [39.794528, -104.955639],
+            [39.794611, -104.940556]
+        ],
+        isPolygon: true
+    }
+];
         // Initialize map - centered to show all 4 neighborhoods
         const map = L.map('map').setView([39.761841, -104.961837], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -568,47 +586,56 @@ document.getElementById('totalPounds').textContent = '~' + totalPounds;
             document.getElementById('loadingMessage').style.display = 'none';
         }
 
-        function renderMap() {
-            neighborhoods.forEach(n => {
-                const hasData = (n.bags || 0) > 0;
-                
-                // Draw boundary
-                const rect = L.rectangle(n.bounds, {
-                    color: hasData ? '#2d5016' : '#999',
-                    weight: hasData ? 3 : 2,
-                    fillColor: hasData ? '#4CAF50' : '#cccccc',
-                    fillOpacity: hasData ? 0.3 : 0.15
-                }).addTo(map);
-
-                rect.on('click', () => {
-                    window.location.href = `/${n.slug}`;
-                });
-
-                rect.bindPopup(`
-                    <div style="text-align:center; padding:8px;">
-                        <strong style="font-size:1.1em;">${n.name}</strong><br>
-                        <span style="color:#666; font-size:0.9em;">
-                            ${hasData ? `${n.bags} bags • ${n.neighbors} neighbors` : 'No cleanups yet'}
-                        </span><br>
-                        <a href="/${n.slug}" style="color:#2d5016; font-weight:600; font-size:0.95em; margin-top:4px; display:inline-block;">Visit →</a>
-                    </div>
-                `);
-
-                // Label
-                const label = L.marker(n.center, {
-                    icon: L.divIcon({
-                        className: 'neighborhood-label',
-                        html: `<div style="background:${hasData ? '#2d5016' : '#888'}; color:white; padding:6px 12px; border-radius:8px; font-weight:600; font-size:13px; white-space:nowrap; box-shadow:0 2px 8px rgba(0,0,0,0.3); cursor:pointer;">${n.name}</div>`,
-                        iconSize: [100, 30]
-                    })
-                }).addTo(map);
-                
-                label.on('click', () => {
-                    window.location.href = `/${n.slug}`;
-                });
-            });
+function renderMap() {
+    neighborhoods.forEach(n => {
+        const hasData = (n.bags || 0) > 0;
+        
+        // Draw boundary (polygon or rectangle)
+        let shape;
+        if (n.isPolygon) {
+            shape = L.polygon(n.bounds, {
+                color: hasData ? '#2d5016' : '#999',
+                weight: hasData ? 3 : 2,
+                fillColor: hasData ? '#4CAF50' : '#cccccc',
+                fillOpacity: hasData ? 0.3 : 0.15
+            }).addTo(map);
+        } else {
+            shape = L.rectangle(n.bounds, {
+                color: hasData ? '#2d5016' : '#999',
+                weight: hasData ? 3 : 2,
+                fillColor: hasData ? '#4CAF50' : '#cccccc',
+                fillOpacity: hasData ? 0.3 : 0.15
+            }).addTo(map);
         }
 
+        shape.on('click', () => {
+            window.location.href = `/${n.slug}`;
+        });
+
+        shape.bindPopup(`
+            <div style="text-align:center; padding:8px;">
+                <strong style="font-size:1.1em;">${n.name}</strong><br>
+                <span style="color:#666; font-size:0.9em;">
+                    ${hasData ? `${n.bags} bags • ${n.neighbors} neighbors` : 'No cleanups yet'}
+                </span><br>
+                <a href="/${n.slug}" style="color:#2d5016; font-weight:600; font-size:0.95em; margin-top:4px; display:inline-block;">Visit →</a>
+            </div>
+        `);
+
+        // Label
+        const label = L.marker(n.center, {
+            icon: L.divIcon({
+                className: 'neighborhood-label',
+                html: `<div style="background:${hasData ? '#2d5016' : '#888'}; color:white; padding:6px 12px; border-radius:8px; font-weight:600; font-size:13px; white-space:nowrap; box-shadow:0 2px 8px rgba(0,0,0,0.3); cursor:pointer;">${n.name}</div>`,
+                iconSize: [150, 30]
+            })
+        }).addTo(map);
+        
+        label.on('click', () => {
+            window.location.href = `/${n.slug}`;
+        });
+    });
+}
         function renderCards() {
             const container = document.getElementById('neighborhoodCards');
             
