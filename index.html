@@ -508,7 +508,7 @@ const neighborhoods = [
         center: [39.756397, -104.966593],
         bounds: [[39.750739, -104.973384], [39.762055, -104.959801]]
     },
-    {
+{
         name: "Elyria-Swansea",
         city: "Denver, CO",
         slug: "elyria-swansea",
@@ -526,9 +526,29 @@ const neighborhoods = [
             [39.794611, -104.940556]
         ],
         isPolygon: true
+    },
+    {
+        name: "Five Points",
+        city: "Denver, CO",
+        slug: "five-points",
+        collection: "cleanups-five-points",
+        center: [39.758, -104.985],
+        bounds: [
+            [39.775111, -104.978389],
+            [39.770306, -104.971889],
+            [39.769167, -104.973333],
+            [39.743722, -104.973389],
+            [39.747472, -104.978194],
+            [39.747389, -104.987361],
+            [39.748889, -104.987417],
+            [39.758833, -105.001861],
+            [39.760389, -105.003194],
+            [39.767583, -104.985389],
+            [39.775250, -104.978528]
+        ],
+        isPolygon: true
     }
-];
-        // Initialize map - centered to show all 4 neighborhoods
+];        // Initialize map - centered to show all 4 neighborhoods
         const map = L.map('map').setView([39.761841, -104.961837], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors',
