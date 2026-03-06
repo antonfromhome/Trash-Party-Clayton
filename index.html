@@ -527,7 +527,7 @@ const neighborhoods = [
         ],
         isPolygon: true
     },
-    {
+{
         name: "Five Points",
         city: "Denver, CO",
         slug: "five-points",
@@ -547,8 +547,23 @@ const neighborhoods = [
             [39.775250, -104.978528]
         ],
         isPolygon: true
+    },
+    {
+        name: "City Park West",
+        city: "Denver, CO",
+        slug: "city-park-west",
+        collection: "cleanups-city-park-west",
+        center: [39.7453, -104.9666],
+        bounds: [
+            [39.750667, -104.959778],
+            [39.739944, -104.959861],
+            [39.740028, -104.973417],
+            [39.750694, -104.973361],
+            [39.750667, -104.959778]
+        ],
+        isPolygon: true
     }
-];        // Initialize map - centered to show all 4 neighborhoods
+];     // Initialize map - centered to show all 4 neighborhoods
         const map = L.map('map').setView([39.761841, -104.961837], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors',
