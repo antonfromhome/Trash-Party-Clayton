@@ -548,7 +548,7 @@ const neighborhoods = [
         ],
         isPolygon: true
     },
-    {
+{
         name: "City Park West",
         city: "Denver, CO",
         slug: "city-park-west",
@@ -562,8 +562,33 @@ const neighborhoods = [
             [39.750667, -104.959778]
         ],
         isPolygon: true
+    },
+    {
+        name: "Globeville",
+        city: "Denver, CO",
+        slug: "globeville",
+        collection: "cleanups-globeville",
+        center: [39.78, -104.985],
+        bounds: [
+            [39.793083, -104.967111],
+            [39.786472, -104.975000],
+            [39.779389, -104.977917],
+            [39.776528, -104.977750],
+            [39.767222, -104.984611],
+            [39.765500, -104.992139],
+            [39.762083, -104.998250],
+            [39.791250, -104.998083],
+            [39.791306, -104.993278],
+            [39.792028, -104.993194],
+            [39.792361, -104.973111],
+            [39.798222, -104.973278],
+            [39.798083, -104.967861],
+            [39.793083, -104.967111]
+        ],
+        isPolygon: true
     }
-];     // Initialize map - centered to show all 4 neighborhoods
+];
+// Initialize map - centered to show all 4 neighborhoods
         const map = L.map('map').setView([39.761841, -104.961837], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors',
