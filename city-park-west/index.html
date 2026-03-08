@@ -539,7 +539,7 @@
                     <input type="email" id="emailInput" required placeholder="your.email@example.com">
                 </div>
                 
-                <button type="submit" class="button" id="emailSubmitBtn">Sign Up</button>
+<button type="submit" class="button" id="emailSubmitBtn">Sign Up</button>
                 
                 <div id="emailMessage"></div>
             </form>
@@ -580,7 +580,7 @@
                     </div>
                 </div>
                 
-                <button type="submit" class="button" id="submitBtn">Log Cleanup</button>
+<button type="submit" class="button" id="submitBtn" disabled>Log Cleanup</button>
                 
                 <div id="formMessage"></div>
             </form>
@@ -747,11 +747,13 @@
                 const q = query(collection(db, "cleanups-city-park-west"), orderBy("lastCleaned", "desc"));
                 const querySnapshot = await getDocs(q);
                 
-                querySnapshot.forEach((doc) => {
-                    const cleanup = doc.data();
-                    addMarkerToMap(cleanup);
-                });
-                
+querySnapshot.forEach((doc) => {
+    const cleanup = doc.data();
+    // Skip any documents with invalid coordinates
+    if (!isNaN(cleanup.lat) && !isNaN(cleanup.lng)) {
+        addMarkerToMap(cleanup);
+    }
+});                
                 // Calculate total bags and unique neighbors
                 let totalBags = 0;
                 const uniqueNeighbors = new Set();
@@ -826,13 +828,15 @@
                 })
             }).addTo(map);
             
-            // Fill in coordinates
-            document.getElementById('lat').value = clickLat.toFixed(6);
-            document.getElementById('lng').value = clickLng.toFixed(6);
-            
-            // Scroll to form
-            document.getElementById('cleanupForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
+// Fill in coordinates
+document.getElementById('lat').value = clickLat.toFixed(6);
+document.getElementById('lng').value = clickLng.toFixed(6);
+
+// Enable submit button
+document.getElementById('submitBtn').disabled = false;
+
+// Scroll to form
+document.getElementById('cleanupForm').scrollIntoView({ behavior: 'smooth', block: 'start' });        });
 
         // Handle cleanup form submission
         document.getElementById('cleanupForm').addEventListener('submit', async function(e) {
@@ -852,7 +856,13 @@
                 lng: parseFloat(document.getElementById('lng').value),
                 lastCleaned: new Date().toISOString().split('T')[0]
             };
-            
+            // Validate coordinates
+if (isNaN(newCleanup.lat) || isNaN(newCleanup.lng)) {
+    messageEl.innerHTML = '<p style="background: #ffebee; color: #c62828; padding: 12px; border-radius: 8px; margin-top: 15px;">❌ Please click on the map to set your location first!</p>';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Log Cleanup';
+    return;
+}
             try {
                 // Save to Firebase
                 await addDoc(collection(db, "cleanups-city-park-west"), newCleanup);
@@ -899,7 +909,8 @@
                 
                 // Clear form
                 this.reset();
-                
+                // Re-disable button after form reset
+submitBtn.disabled = true;
                 setTimeout(() => {
                     messageEl.innerHTML = '';
                 }, 5000);
