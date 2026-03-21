@@ -837,9 +837,9 @@ document.getElementById('submitBtn').disabled = false;
 
 // Scroll to form
 document.getElementById('cleanupForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });  // <-- Close the map.on('click') function
 
-        // Handle cleanup form submission
-        document.getElementById('cleanupForm').addEventListener('submit', async function(e) {
+        // Handle cleanup form submission        document.getElementById('cleanupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const submitBtn = document.getElementById('submitBtn');
