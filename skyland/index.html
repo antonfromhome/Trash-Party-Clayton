@@ -826,7 +826,7 @@ header a:hover {
                     </div>
                 </div>
                 
-                <button type="submit" class="button" id="submitBtn">Log Cleanup</button>
+<button type="submit" class="button" id="submitBtn" disabled>Log Cleanup</button>
                 
                 <div id="formMessage"></div>
             </form>
@@ -965,11 +965,14 @@ async function loadCleanups() {
     try {
         // Load user-submitted cleanups from Firebase
 const q = query(collection(db, "cleanups-skyland"), orderBy("lastCleaned", "desc"));
-const querySnapshot = await getDocs(q);        querySnapshot.forEach((doc) => {
-            const cleanup = doc.data();
-            addMarkerToMap(cleanup);
-        });
-        
+const querySnapshot = await getDocs(q);        
+querySnapshot.forEach((doc) => {
+    const cleanup = doc.data();
+    // Skip any documents with invalid coordinates
+    if (!isNaN(cleanup.lat) && !isNaN(cleanup.lng)) {
+        addMarkerToMap(cleanup);
+    }
+});        
         // Calculate total bags and unique neighbors
         let totalBags = 0;
         const uniqueNeighbors = new Set();
@@ -1053,6 +1056,9 @@ map.on('click', function(e) {
     document.getElementById('lat').value = e.latlng.lat.toFixed(6);
     document.getElementById('lng').value = e.latlng.lng.toFixed(6);
     
+    // Enable submit button
+document.getElementById('submitBtn').disabled = false;
+
     document.getElementById('cleanupForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
@@ -1074,7 +1080,14 @@ document.getElementById('cleanupForm').addEventListener('submit', async function
         lng: parseFloat(document.getElementById('lng').value),
         lastCleaned: new Date().toISOString().split('T')[0]
     };
-    
+    // Validate coordinates first
+if (isNaN(newCleanup.lat) || isNaN(newCleanup.lng)) {
+    messageEl.textContent = '⚠️ Please click on the map to set your location first!';
+    messageEl.className = 'message error';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Log Cleanup';
+    return;
+}
     // Validate the submission
     if (newCleanup.bags > 50) {
         messageEl.textContent = '⚠️ 50+ bags is amazing! Please contact us at hello-trash@trashparty.org to verify this cleanup.';
@@ -1162,7 +1175,8 @@ const snapshot = await getDocs(q);
         
         // Clear the form
         this.reset();
-        
+        // Re-disable button after form reset
+submitBtn.disabled = true;
         // Clear success message after 5 seconds
         setTimeout(() => {
             messageEl.textContent = '';
