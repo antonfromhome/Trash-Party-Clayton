@@ -651,7 +651,48 @@ header a:hover {
     .live-badge { display: none; }
     .back-link { display: none; }
     .banner-divider { display: none; }
-}  
+}
+
+/* Cleanup Day Callout */
+.cleanup-day-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    background: var(--green-dark);
+    color: var(--off-white);
+    border-radius: 14px;
+    padding: 18px 24px;
+    margin-bottom: 40px;
+    text-decoration: none;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 1.05em;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.cleanup-day-banner:hover {
+    background: #24400f;
+    transform: translateY(-1px);
+}
+
+.cleanup-day-banner .cleanup-day-arrow {
+    color: var(--green-bright);
+}
+
+.cleanup-day-banner .cleanup-day-accent {
+    color: var(--green-bright);
+    font-weight: 700;
+}
+
+@media (max-width: 600px) {
+    .cleanup-day-banner {
+        font-size: 0.95em;
+        padding: 14px 18px;
+    }
+}
     </style>
 <header class="site-banner">
     <div class="banner-inner">
@@ -697,7 +738,12 @@ header a:hover {
     <p>Pounds of Litter Picked Up</p>
 </div>
         </div>
-     
+
+        <!-- Cleanup Day Callout -->
+        <a href="/clayton/cleanup-day.html" class="cleanup-day-banner">
+            🎉 Cleanup Day coming soon <span class="cleanup-day-arrow">→</span> <span class="cleanup-day-accent">learn more</span>
+        </a>
+
         <!-- Map Section -->
         <div class="map-section">
             <div class="section-header">
