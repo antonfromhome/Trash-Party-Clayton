@@ -33,7 +33,7 @@
     background: white;
     border-radius: 20px;
     padding: 50px 40px;
-    margin: -60px auto 60px;
+    margin: 20px auto 60px;
     max-width: 1200px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.08);
     display: grid;
@@ -42,6 +42,41 @@
     text-align: center;
 }        .stat-item h2 { font-size: 4em; font-weight: 800; color: #2d5016; margin-bottom: 8px; line-height: 1; }
         .stat-item p { font-size: 0.95em; color: #666; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .activity-ticker {
+            display: none;
+            align-items: center;
+            gap: 16px;
+            max-width: 1200px;
+            margin: 24px auto 0;
+            padding: 14px 24px;
+            flex-wrap: wrap;
+        }
+        .activity-ticker.has-activity { display: flex; }
+        .ticker-label {
+            font-size: 0.8em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #2d5016;
+            opacity: 0.7;
+            flex-shrink: 0;
+        }
+        .ticker-pills { display: flex; gap: 10px; flex-wrap: wrap; flex: 1; }
+        .activity-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #eef6ea;
+            border: 1px solid rgba(45, 80, 22, 0.15);
+            border-radius: 999px;
+            padding: 8px 16px;
+            font-size: 0.88em;
+            color: #2d5016;
+        }
+        .activity-pill .pill-name { font-weight: 700; }
+        .activity-pill .pill-sep { opacity: 0.4; }
+        .activity-pill .pill-time { color: #6b7a5f; font-size: 0.92em; }
 
         .map-section {
             background: white;
@@ -137,11 +172,13 @@
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.5em; }
             .hero p { font-size: 1.1em; }
-            .universal-stats { margin: -40px 20px 40px; padding: 30px 20px; gap: 30px; }
+            .universal-stats { margin: 16px 20px 40px; padding: 30px 20px; gap: 30px; }
             .stat-item h2 { font-size: 3em; }
             #map { height: 400px; }
             .cta-section { padding: 40px 20px; }
             .cta-section h2 { font-size: 1.8em; }
+            .activity-ticker { margin: 16px 20px 0; padding: 12px 16px; }
+            .ticker-label { width: 100%; }
         }
 /* Site Banner - New Design */
 :root {
@@ -341,6 +378,11 @@
         </div>
     </div>
 </header>
+    <!-- Recent Activity Ticker -->
+    <div class="activity-ticker" id="activityTicker">
+        <span class="ticker-label">Recent Activity</span>
+        <div class="ticker-pills" id="tickerPills"></div>
+    </div>
     <div class="container">
         <!-- Universal Stats -->
 <div class="universal-stats">
@@ -646,6 +688,7 @@ const neighborhoods = [
     let totalPounds = 0;
     let activeNeighborhoods = 0;
     const allNeighbors = new Set(); // Track unique neighbors across all neighborhoods
+    const recentCleanups = []; // Track individual cleanups across all neighborhoods for the activity ticker
 
     // Fetch real data for each neighborhood
     await Promise.all(neighborhoods.map(async (n) => {
@@ -653,7 +696,7 @@ const neighborhoods = [
                     const snap = await getDocs(query(collection(db, n.collection)));
                     let bags = 0;
                     const nbrs = new Set();
-                    
+
                     snap.forEach(doc => {
     const d = doc.data();
     bags += d.bags || 0;
@@ -661,6 +704,14 @@ const neighborhoods = [
         const volunteerName = d.volunteer.trim().toLowerCase();
         nbrs.add(volunteerName);
         allNeighbors.add(volunteerName); // Add to global set
+    }
+    if (d.volunteer && d.lastCleaned) {
+        recentCleanups.push({
+            volunteer: d.volunteer.trim(),
+            bags: d.bags || 0,
+            neighborhood: n.name,
+            lastCleaned: d.lastCleaned
+        });
     }
 });
                     n.bags = bags;
@@ -687,8 +738,49 @@ document.getElementById('totalPounds').textContent = '~' + totalPounds;
             // Render map and cards
             renderMap();
             renderCards();
+            renderActivityTicker(recentCleanups);
 
             document.getElementById('loadingMessage').style.display = 'none';
+        }
+
+        function timeAgo(dateStr) {
+            const cleanedDate = new Date(dateStr + 'T00:00:00');
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const diffDays = Math.round((today - cleanedDate) / 86400000);
+
+            if (diffDays <= 0) return 'Today';
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return `${diffDays} days ago`;
+            if (diffDays < 30) { const w = Math.round(diffDays / 7); return `${w} week${w > 1 ? 's' : ''} ago`; }
+            if (diffDays < 365) { const m = Math.round(diffDays / 30); return `${m} month${m > 1 ? 's' : ''} ago`; }
+            const y = Math.round(diffDays / 365);
+            return `${y} year${y > 1 ? 's' : ''} ago`;
+        }
+
+        function renderActivityTicker(cleanups) {
+            const ticker = document.getElementById('activityTicker');
+            const pillsContainer = document.getElementById('tickerPills');
+
+            if (!cleanups.length) return; // Keep ticker hidden if no activity yet
+
+            const recent = cleanups
+                .sort((a, b) => b.lastCleaned.localeCompare(a.lastCleaned))
+                .slice(0, 3);
+
+            pillsContainer.innerHTML = recent.map(c => `
+                <div class="activity-pill">
+                    <span class="pill-name">${c.volunteer}</span>
+                    <span class="pill-sep">·</span>
+                    <span>${c.bags} bag${c.bags === 1 ? '' : 's'}</span>
+                    <span class="pill-sep">·</span>
+                    <span>${c.neighborhood}</span>
+                    <span class="pill-sep">·</span>
+                    <span class="pill-time">${timeAgo(c.lastCleaned)}</span>
+                </div>
+            `).join('');
+
+            ticker.classList.add('has-activity');
         }
 
 function renderMap() {
